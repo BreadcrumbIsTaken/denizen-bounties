@@ -1,25 +1,8 @@
-# +------------------------------------------------------------------------
-# |    ____                     _                           _     _
-# |   |  _ \                   | |                         | |   ( )
-# |   | |_) |_ __ ___  __ _  __| | ___ _ __ _   _ _ __ ___ | |__ |/ ___
-# |   |  _ <| '__/ _ \/ _` |/ _` |/ __| '__| | | | '_ ` _ \| '_ \  / __|
-# |   | |_) | | |  __/ (_| | (_| | (__| |  | |_| | | | | | | |_) | \__ \
-# |   |____/|_|  \___|\__,_|\__,_|\___|_|   \__,_|_| |_| |_|_.__/  |___/
-# |                                                    _   _ _____   _____
-# |       /\                                          | \ | |  __ \ / ____|
-# |      /  \__      _____  ___  ___  _ __ ___   ___  |  \| | |__) | |
-# |     / /\ \ \ /\ / / _ \/ __|/ _ \| '_ ` _ \ / _ \ | . ` |  ___/| |
-# |    / ____ \ V  V /  __/\__ \ (_) | | | | | |  __/ | |\  | |    | |____
-# |   /_/____\_\_/\_/ \___||___/\___/|_|_|_| |_|\___| |_| \_|_|     \_____|
-# |    / ____|                   | |  / ____| |
-# |   | |  __ _   _  __ _ _ __ __| | | (___ | |__   ___  _ __
-# |   | | |_ | | | |/ _` | '__/ _` |  \___ \| '_ \ / _ \| '_ \
-# |   | |__| | |_| | (_| | | | (_| |  ____) | | | | (_) | |_) |
-# |    \_____|\__,_|\__,_|_|  \__,_| |_____/|_| |_|\___/| .__/
-# |                                                     | |
-# |                                                     |_|
-# |   Your very own bodyguard in Minecraft!
-# +------------------------------------------------------------------------
+# +--------------------------------------
+# | Breadcrumb's Awesome NPC Guard Shop
+# |
+# | Your very own bodyguard in Minecraft!
+# +--------------------------------------
 #
 # ~~ A Denizen Bounty project. ~~
 #
@@ -33,6 +16,7 @@
 #   Citizens (NPCs)
 #   Sentinel (NPC combat!)
 #   Vault (economy)
+#   Depenizen (Denizen bridge)
 
 guard_shop_data:
     type: data
@@ -66,6 +50,12 @@ guard_shop_data:
         guards_per_player: 2
         # Proximity radius for player giving commands.
         proximity_radius: 10
+        # How close to follow player.
+        follow_lead: 4
+        # How fast to follow player.
+        follow_speed: 1.6
+        # How much health the guard has
+        health: 25
 
 # Basic economy script. Change this however you want. If you already have one,
 # than you can delete/comment this out.
@@ -100,30 +90,37 @@ guard_shop_shopkeeper_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:5
+                        - lookclose true range:<proc[gs_data].context[shopkeeper.proximity_radius]> realistic
                         - narrate <proc[gs_data].context[shopkeeper.greeting]> format:guard_shop_shopkeeper_chat_format
                         - wait 1s
                         - narrate <proc[gs_data].context[shopkeeper.store_inquiry]> format:guard_shop_shopkeeper_chat_format
                 exit:
                     script:
+                        - lookclose false
                         - narrate <proc[gs_data].context[shopkeeper.goodbye]> format:guard_shop_shopkeeper_chat_format
             chat trigger:
                 1:
                     trigger: /yes|Yes|YES/
                     hide trigger message: true
                     script:
+                        - if !<player.has_flag[guard_ownership_amount]>:
+                            - flag <player> guard_ownership_amount:1
                         - if <player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
                             - define price <proc[gs_data].context[guard.price]>
                             - if <player.flag[money].is[or_more].than[<[price]>]>:
                                 - money take quantity:<[price]>
                                 - narrate <proc[gs_data].context[shopkeeper.purchace]> format:guard_shop_shopkeeper_chat_format
-                                - create player Guard <player.location> traits:Sentinel save:guard
+                                - create player Guard <player.location> traits:sentinel save:guard
 
                                 - define guard <entry[guard].created_npc>
 
+                                # Spawns in the guard
                                 - flag player guards:->:<[guard]>
                                 - adjust <[guard]> name:Guard
                                 - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin_texture]>;<proc[gs_data].context[guard.skin_signature]>
+                                - heal <[guard]> <proc[gs_data].context[guard.health]>
+                                - flag <player> guards_stay:false
+                                - assignment set script:guard to:<[guard]>
                             - else:
                                 - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                         - else:
@@ -139,6 +136,44 @@ guard:
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<script[guard_shop_data].data_key[guard.proximity_radius]>
+            - narrate "I LIVE"
+    interact scripts:
+        - guard_interact_script
+
+guard_interact_script:
+    type: interact
+    steps:
+        1:
+            proximity trigger:
+                entry:
+                    script:
+                        - narrate hi
+                        # - walk stop
+                        - lookclose true range:<proc[gs_data].context[guard.proximity_radius]> realistic
+                exit:
+                    script:
+                        - narrate bye
+            # chat trigger:
+            #     1:
+            #         trigger: /stay|Stay|STAY/
+            #         hide trigger message: true
+            #         script:
+            #             - flag <player> guards_stay:true
+            #     2:
+            #         trigger: /follow|Follow|FOLLOW/
+            #         hide trigger message: true
+            #         script:
+            #             - flag <player> guards_stay:false
+            #     3:
+            #         trigger: /fire|Fire|FIRE/
+            #         hide trigger message: true
+            #         script:
+            #             - flag <player> guards:<-:<npc>
+            #             - if <player.flag[guard_ownership_amount]> == 1:
+            #                 - flag <player> guard_ownership_amount:0
+            #             - else:
+            #                 - flag <player> guard_ownership_amount:--
+            #             - remove <npc>
 
 guard_shop_shopkeeper_chat_format:
     type: format
