@@ -38,10 +38,10 @@
 #   The "remove" command will remove the guard compleatly.
 
 # TODO: Passive and aggressive command. Probably use the ignoretarget command instead of guard, but try and see.
-# TODO: Despawn/respawn commands.
 
 guard_shop_data:
     type: data
+    respawn_command_error: You can only use this command when you have despawned guards!
     shopkeeper:
         # Shows up in chat before text.
         chat_name: &cShopkeeper&r&co
@@ -85,7 +85,7 @@ guard_shop_data:
             stay: stay
             # Continue following player
             follow: follow
-            # Despawns guard
+            # Despawn guard (temporarily). To respawn do /respawnguards
             despawn: despawn
             # No attacking
             passive: passive
@@ -246,7 +246,12 @@ guard_interact_script:
                     trigger: /<proc[gs_data].context[guard.commands.remove]>/
                     hide trigger message: true
                     script:
-                        - run remove_guard def.guard:<npc>
+                        - flag <player> guards:<-:<npc>
+                        - if <player.flag[guard_ownership_amount]> == 1:
+                            - flag <player> guard_ownership_amount:0
+                        - else:
+                            - flag <player> guard_ownership_amount:--
+                        - remove <npc>
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 2:
                     trigger: /<proc[gs_data].context[guard.commands.stay]>/
@@ -272,6 +277,26 @@ guard_interact_script:
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                6:
+                    trigger: /<proc[gs_data].context[guard.commands.despawn]>/
+                    hide trigger message: true
+                    script:
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        - flag <player> guards_despawned
+                        - despawn
+
+respawn_guards:
+    type: command
+    usage: /respawnguards
+    name: respawnguards
+    description: Respawns your personal guards!
+    script:
+        - if <player.has_flag[guards_despawned]>:
+            - foreach <player.flag[guards]> as:guard:
+                - spawn <[guard]> <player.location> persistent
+            - flag <player> guards_despawned:!
+        - else:
+            - narrate <proc[gs_data].context[respawn_command_error]>
 
 guard_shop_shopkeeper_chat_format:
     type: format
@@ -286,14 +311,3 @@ gs_data:
     definitions: data_key
     script:
         - determine <script[guard_shop_data].data_key[<[data_key]>].unescaped.parse_color>
-
-remove_guard:
-    type: task
-    definitions: guard
-    script:
-        - flag <player> guards:<-:<[guard]>
-        - if <player.flag[guard_ownership_amount]> == 1:
-            - flag <player> guard_ownership_amount:0
-        - else:
-            - flag <player> guard_ownership_amount:--
-        - remove <[guard]>
