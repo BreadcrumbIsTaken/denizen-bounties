@@ -18,6 +18,8 @@
 #   Vault (economy)
 #   Depenizen (Denizen bridge)
 
+# TODO: respawn delay
+
 guard_shop_data:
     type: data
     shopkeeper:
@@ -55,7 +57,37 @@ guard_shop_data:
         # How fast to follow player.
         follow_speed: 1.6
         # How much health the guard has
-        health: 25
+        health: 35
+        # What item to put in guard's main hand.
+        main_hand: iron_sword
+        commands:
+            # Stop moving (don't follow)
+            stay: stay
+            # Continue following player
+            follow: follow
+            # Despawns guard
+            despawn: despawn
+            # No attacking
+            passive: passive
+            # Become aggressive
+            aggressive: aggressive
+            # Permanatly removes guard
+            remove: remove
+        # Guard's name
+        name: &6Guard
+        # Shows up in chat before text.
+        chat_name: &6Guard&r&co
+        # What to say when following a command
+        command_reply: Okay!
+        # What to do when guard dies.
+        # Can be either:
+        # remove
+        # or
+        # timed
+        respawn_mode: timed
+        # Only used if "respawn_mode" is "timed".
+        # How long until guard respawns.
+        respawn_delay: 300t
 
 # Basic economy script. Change this however you want. If you already have one,
 # than you can delete/comment this out.
@@ -115,12 +147,16 @@ guard_shop_shopkeeper_interact_script:
                                 - define guard <entry[guard].created_npc>
 
                                 # Spawns in the guard
-                                - flag player guards:->:<[guard]>
-                                - adjust <[guard]> name:Guard
+                                - flag <player> guards:->:<[guard]>
+                                - flag <[guard]> owner:<player>
+                                - assignment set script:personal_guard npc:<[guard]>
+                                - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
                                 - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin_texture]>;<proc[gs_data].context[guard.skin_signature]>
-                                - heal <[guard]> <proc[gs_data].context[guard.health]>
-                                - flag <player> guards_stay:false
-                                - assignment set script:guard to:<[guard]>
+                                - health <[guard]> <proc[gs_data].context[guard.health]>
+                                - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
+                                - adjust <player> selected_npc:<[guard]>
+                                - execute "sentinel guard <player.name>" as_player
+                                - flag <player> guards_follow:true
                             - else:
                                 - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                         - else:
@@ -131,12 +167,19 @@ guard_shop_shopkeeper_interact_script:
                     script:
                         - narrate <proc[gs_data].context[shopkeeper.no_purchace]> format:guard_shop_shopkeeper_chat_format
 
-guard:
+personal_guard:
     type: assignment
     actions:
         on assignment:
-            - trigger name:proximity state:true radius:<script[guard_shop_data].data_key[guard.proximity_radius]>
-            - narrate "I LIVE"
+            - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
+            - trigger name:proximity state:true radius:5
+            - narrate ayo
+        on attack:
+            - if <npc.flag[owner].flag[guards_follow]>:
+                - flag <npc.flag[owner]> guards_follow:!
+        on death:
+            - if <proc[gs_data].context[guard.respawn_mode]> == remove:
+                - run remove_guard def.guard:<npc>
     interact scripts:
         - guard_interact_script
 
@@ -147,40 +190,73 @@ guard_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - narrate hi
-                        # - walk stop
+                        - if <player.flag[guards_follow]>:
+                            - follow stop
                         - lookclose true range:<proc[gs_data].context[guard.proximity_radius]> realistic
                 exit:
                     script:
-                        - narrate bye
-            # chat trigger:
-            #     1:
-            #         trigger: /stay|Stay|STAY/
-            #         hide trigger message: true
-            #         script:
-            #             - flag <player> guards_stay:true
-            #     2:
-            #         trigger: /follow|Follow|FOLLOW/
-            #         hide trigger message: true
-            #         script:
-            #             - flag <player> guards_stay:false
-            #     3:
-            #         trigger: /fire|Fire|FIRE/
-            #         hide trigger message: true
-            #         script:
-            #             - flag <player> guards:<-:<npc>
-            #             - if <player.flag[guard_ownership_amount]> == 1:
-            #                 - flag <player> guard_ownership_amount:0
-            #             - else:
-            #                 - flag <player> guard_ownership_amount:--
-            #             - remove <npc>
+                        - if <player.flag[guards_follow]>:
+                            - follow target:<player> lead:<proc[gs_data].context[guard.follow_lead]> speed:<proc[gs_data].context[guard.follow_speed]>
+            chat trigger:
+                1:
+                    # COMPLEATLY REMOVE GUARD
+                    trigger: /<proc[gs_data].context[guard.commands.remove]>/
+                    hide trigger message: true
+                    script:
+                        - run remove_guard def.guard:<npc>
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                2:
+                    trigger: /<proc[gs_data].context[guard.commands.stay]>/
+                    hide trigger message: true
+                    script:
+                        - flag <player> guards_follow:false
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                3:
+                    trigger: /<proc[gs_data].context[guard.commands.follow]>/
+                    hide trigger message: true
+                    script:
+                        - flag <player> guards_follow:true
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                4:
+                    trigger: /<proc[gs_data].context[guard.commands.passive]>/
+                    hide trigger message: true
+                    script:
+                        - flag <npc> is_passive:true
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                5:
+                    trigger: /<proc[gs_data].context[guard.commands.aggressive]>/
+                    hide trigger message: true
+                    script:
+                        - flag <npc> is_passive:!
+                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+
+guard_is_attacking:
+    type: world
+    events:
+        on sentinel npc attacks flagged:is_passive:
+            - determine cancelled
 
 guard_shop_shopkeeper_chat_format:
     type: format
-    format: <script[guard_shop_data].data_key[shopkeeper.chat_name].unescaped.parse_color> <[text]>
+    format: <proc[gs_data].context[shopkeeper.chat_name].unescaped.parse_color> <[text]>
+
+guard_chat_format:
+    type: format
+    format: <proc[gs_data].context[guard.chat_name].unescaped.parse_color> <[text]>
 
 gs_data:
     type: procedure
     definitions: data_key
     script:
         - determine <script[guard_shop_data].data_key[<[data_key]>].unescaped.parse_color>
+
+remove_guard:
+    type: task
+    definitions: guard
+    script:
+        - flag <player> guards:<-:<[guard]>
+        - if <player.flag[guard_ownership_amount]> == 1:
+            - flag <player> guard_ownership_amount:0
+        - else:
+            - flag <player> guard_ownership_amount:--
+        - remove <[guard]>
