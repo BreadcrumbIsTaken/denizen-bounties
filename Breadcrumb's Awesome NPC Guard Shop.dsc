@@ -37,8 +37,6 @@
 #   The "aggressive" command will make the guard attack entities.
 #   The "remove" command will remove the guard compleatly.
 
-# TODO: Passive and aggressive command. Probably use the ignoretarget command instead of guard, but try and see.
-
 guard_shop_data:
     type: data
     respawn_command_error: You can only use this command when you have despawned guards!
@@ -75,7 +73,7 @@ guard_shop_data:
         # How close to follow player.
         follow_lead: 4
         # How fast to follow player.
-        follow_speed: 1.6
+        follow_speed: 1
         # How much health the guard has
         health: 35
         # What item to put in guard's main hand.
@@ -116,7 +114,7 @@ guard_shop_data:
             # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
             - creepers
         # Rate of attack in seconds.
-        attack_rate: 1
+        attack_rate: 2
         # If true, guard will not notice entities behind it.
         # If false, it will notice entities behind it.
         realistic: false
@@ -191,6 +189,7 @@ guard_shop_shopkeeper_interact_script:
                                 - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server
                                 - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server
                                 - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server
+                                - execute "sentinel guarddistance <proc[gs_data].context[guard.proximity_range]> --id <[guard].id>" as_server
 
                                 - if !<proc[gs_data].context[guard.attacks].is_empty>:
                                     - foreach <proc[gs_data].context[guard.attacks]> as:i:
@@ -218,7 +217,7 @@ personal_guard:
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
-            - trigger name:proximity state:true radius:5
+            - trigger name:chat state:true radius:<proc[gs_data].context[guard.proximity_radius]>
         on attack:
             - if <npc.flag[owner].flag[guards_follow]>:
                 - flag <npc.flag[owner]> guards_follow:!
@@ -232,14 +231,10 @@ guard_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - if <player.flag[guards_follow]>:
-                            - follow stop
                         - lookclose true range:<proc[gs_data].context[guard.proximity_radius]> realistic
                 exit:
                     script:
-                        - if <player.flag[guards_follow]>:
-                            - lookclose false
-                            - follow target:<player> lead:<proc[gs_data].context[guard.follow_lead]> speed:<proc[gs_data].context[guard.follow_speed]>
+                        - lookclose false
             chat trigger:
                 1:
                     # COMPLEATLY REMOVE GUARD
@@ -257,25 +252,30 @@ guard_interact_script:
                     trigger: /<proc[gs_data].context[guard.commands.stay]>/
                     hide trigger message: true
                     script:
-                        - flag <player> guards_follow:false
+                        - execute "sentinel guard --id <npc.id>" as_server
+                        - execute "sentinel guarddistance <proc[gs_data].context[guard.proximity_range]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 3:
                     trigger: /<proc[gs_data].context[guard.commands.follow]>/
                     hide trigger message: true
                     script:
-                        - flag <player> guards_follow:true
+                        - execute "sentinel guard <player.name> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 4:
                     trigger: /<proc[gs_data].context[guard.commands.passive]>/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard <player.name> --id <npc.id>" as_server
+                        - if !<proc[gs_data].context[guard.attacks].is_empty>:
+                            - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                                - execute "sentinel removetarget <[i]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 5:
                     trigger: /<proc[gs_data].context[guard.commands.aggressive]>/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard --id <npc.id>" as_server
+                        - if !<proc[gs_data].context[guard.attacks].is_empty>:
+                            - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                                - execute "sentinel addtarget <[i]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 6:
                     trigger: /<proc[gs_data].context[guard.commands.despawn]>/
