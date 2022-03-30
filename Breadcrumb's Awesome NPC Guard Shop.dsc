@@ -25,11 +25,12 @@
 #   In game, use the command "/ex reload" to reload Denizen's scripts.
 #
 # How to use:
-#   Configure all the data below to whatever values you want.
+#   Configure all the config values below to whatever values you want.
 #   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/npc assignment --set guard_shop_shopkeeper)
+#   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
 # Guard commands:
-#   When in the proximity range specified in the "guard_shop_data" container, you can give the guards commands by typing them in chat.
+#   When in the proximity range specified in the "guard_shop_config" container, you can give the guards commands by typing them in chat.
 #   The commands are "stay", "follow", "passive", "aggressive", and "remove".
 #   The "stay" command will make the guards not follow the owner when the owner moves outside of the guard's proximity range.
 #   The "follow" command will make the guards follow the owner again.
@@ -37,7 +38,7 @@
 #   The "aggressive" command will make the guard attack entities.
 #   The "remove" command will remove the guard compleatly.
 
-guard_shop_data:
+guard_shop_config:
     type: data
     respawn_command_error: You can only use this command when you have despawned guards!
     shopkeeper:
@@ -118,6 +119,12 @@ guard_shop_data:
         # If true, guard will not notice entities behind it.
         # If false, it will notice entities behind it.
         realistic: false
+        # How far the player needs to go before guard starts following the player.
+        follow_distance: 5
+        # Despawns the guards when the player leaves.
+        despawn_on_owner_leave: true
+        # Respawns the guards when the player joins
+        respawn_on_owner_join: true
 
 # Basic economy script. Change this however you want. If you already have one,
 # than you can delete/comment this out.
@@ -189,7 +196,7 @@ guard_shop_shopkeeper_interact_script:
                                 - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server
                                 - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server
                                 - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server
-                                - execute "sentinel guarddistance <proc[gs_data].context[guard.proximity_range]> --id <[guard].id>" as_server
+                                - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server
 
                                 - if !<proc[gs_data].context[guard.attacks].is_empty>:
                                     - foreach <proc[gs_data].context[guard.attacks]> as:i:
@@ -253,13 +260,13 @@ guard_interact_script:
                     hide trigger message: true
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server
-                        - execute "sentinel guarddistance <proc[gs_data].context[guard.proximity_range]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 3:
                     trigger: /<proc[gs_data].context[guard.commands.follow]>/
                     hide trigger message: true
                     script:
                         - execute "sentinel guard <player.name> --id <npc.id>" as_server
+                        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 4:
                     trigger: /<proc[gs_data].context[guard.commands.passive]>/
@@ -298,6 +305,52 @@ respawn_guards:
         - else:
             - narrate <proc[gs_data].context[respawn_command_error]>
 
+reload_guards_command:
+    type: command
+    usage: /reloadguards
+    name: reloadguards
+    description: Reloads certain data for your personal guards.
+    script:
+        - run reload_guards
+        - narrate "Guards reloaded!"
+
+reload_guards:
+    type: task
+    script:
+        - foreach <player.flag[guards]> as:guard:
+            - define data <proc[gs_data].context[guard]>
+            - define id <[guard].id>
+            - execute "sentinel respawntime <[data].get[name]> --id <[id]>" as_server
+            - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server
+            - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server
+            - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server
+
+            - if !<[data].get[attacks].is_empty>:
+                - foreach <[data].get[attacks]> as:i:
+                    - execute "sentinel addtarget <[i]> --id <[id]>" as_server
+            - if !<[data].get[ignores].is_empty>:
+                - foreach <[data].get[ignores]> as:i:
+                    - execute "sentinel addignore <[i]> --id <[id]>" as_server
+            - if !<[data].get[avoids].is_empty>:
+                - foreach <[data].get[avoids]> as:i:
+                    - execute "sentinel addavoid <[i]> --id <[id]>" as_server
+
+player_leaves_despawn_guards:
+    type: world
+    events:
+        on player quits:
+            - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
+                - foreach <player.flag[guards]> as:i:
+                    - despawn <[i]>
+
+player_joins_respawn_guards:
+    type: world
+    events:
+        on player joins:
+            - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
+                - foreach <player.flag[guards]> as:guard:
+                    - spawn <[guard]> <player.location> persistent
+
 guard_shop_shopkeeper_chat_format:
     type: format
     format: <proc[gs_data].context[shopkeeper.chat_name].unescaped.parse_color> <[text]>
@@ -310,4 +363,4 @@ gs_data:
     type: procedure
     definitions: data_key
     script:
-        - determine <script[guard_shop_data].data_key[<[data_key]>].unescaped.parse_color>
+        - determine <script[guard_shop_config].data_key[<[data_key]>].unescaped.parse_color>
