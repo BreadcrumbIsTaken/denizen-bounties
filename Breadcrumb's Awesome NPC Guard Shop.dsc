@@ -17,8 +17,28 @@
 #   Sentinel (NPC combat!)
 #   Vault (economy)
 #   Depenizen (Denizen bridge)
+#
+# Installation:
+#   Install all the plugins required above and put them into your plugins folder.
+#   After you run the server, a bunch of plugin folders will be created.
+#   Go into plugins/Denizen/scripts/ and drag this file into it.
+#   In game, use the command "/ex reload" to reload Denizen's scripts.
+#
+# How to use:
+#   Configure all the data below to whatever values you want.
+#   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/npc assignment --set guard_shop_shopkeeper)
+#
+# Guard commands:
+#   When in the proximity range specified in the "guard_shop_data" container, you can give the guards commands by typing them in chat.
+#   The commands are "stay", "follow", "passive", "aggressive", and "remove".
+#   The "stay" command will make the guards not follow the owner when the owner moves outside of the guard's proximity range.
+#   The "follow" command will make the guards follow the owner again.
+#   The "passive" command will make the guard not harm any entity.
+#   The "aggressive" command will make the guard attack entities.
+#   The "remove" command will remove the guard compleatly.
 
-# TODO: respawn delay
+# TODO: Passive and aggressive command. Probably use the ignoretarget command instead of guard, but try and see.
+# TODO: Despawn/respawn commands.
 
 guard_shop_data:
     type: data
@@ -244,20 +264,14 @@ guard_interact_script:
                     trigger: /<proc[gs_data].context[guard.commands.passive]>/
                     hide trigger message: true
                     script:
-                        - flag <npc> is_passive:true
+                        - execute "sentinel guard <player.name> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 5:
                     trigger: /<proc[gs_data].context[guard.commands.aggressive]>/
                     hide trigger message: true
                     script:
-                        - flag <npc> is_passive:!
+                        - execute "sentinel guard --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
-
-guard_is_attacking:
-    type: world
-    events:
-        on sentinel npc attacks flagged:is_passive:
-            - determine cancelled
 
 guard_shop_shopkeeper_chat_format:
     type: format
