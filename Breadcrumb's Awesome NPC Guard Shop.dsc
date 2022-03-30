@@ -9,7 +9,7 @@
 # @author Breadcrumb
 # @date 2022-03-27
 # @denizen-build REL-1762
-# @script-version 0.0
+# @script-version 1.0
 #
 # Plugin dependancies:
 #   Denizen (to run this script)
