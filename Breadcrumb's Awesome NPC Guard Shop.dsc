@@ -79,15 +79,27 @@ guard_shop_data:
         chat_name: &6Guard&r&co
         # What to say when following a command
         command_reply: Okay!
-        # What to do when guard dies.
-        # Can be either:
-        # remove
-        # or
-        # timed
-        respawn_mode: timed
-        # Only used if "respawn_mode" is "timed".
-        # How long until guard respawns.
-        respawn_delay: 300t
+        # How long until guard respawns in seconds.
+        # 0 will disable automatic respawn.
+        # -1 will delete the guard when killed.
+        respawn_delay: 5
+        attacks:
+            # What to attack.
+            # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
+            - monsters
+        ignores:
+            # What to ignore.
+            # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
+            - npcs
+        avoids:
+            # What to avoid.
+            # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
+            - creepers
+        # Rate of attack in seconds.
+        attack_rate: 1
+        # If true, guard will not notice entities behind it.
+        # If false, it will notice entities behind it.
+        realistic: false
 
 # Basic economy script. Change this however you want. If you already have one,
 # than you can delete/comment this out.
@@ -154,8 +166,22 @@ guard_shop_shopkeeper_interact_script:
                                 - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin_texture]>;<proc[gs_data].context[guard.skin_signature]>
                                 - health <[guard]> <proc[gs_data].context[guard.health]>
                                 - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
-                                - adjust <player> selected_npc:<[guard]>
-                                - execute "sentinel guard <player.name>" as_player
+
+                                - execute "sentinel guard <player.name> --id <[guard].id>" as_server
+                                - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server
+                                - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server
+                                - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server
+
+                                - if !<proc[gs_data].context[guard.attacks].is_empty>:
+                                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server
+                                - if !<proc[gs_data].context[guard.ignores].is_empty>:
+                                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
+                                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server
+                                - if !<proc[gs_data].context[guard.avoids].is_empty>:
+                                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
+                                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
+
                                 - flag <player> guards_follow:true
                             - else:
                                 - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
@@ -173,13 +199,9 @@ personal_guard:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
             - trigger name:proximity state:true radius:5
-            - narrate ayo
         on attack:
             - if <npc.flag[owner].flag[guards_follow]>:
                 - flag <npc.flag[owner]> guards_follow:!
-        on death:
-            - if <proc[gs_data].context[guard.respawn_mode]> == remove:
-                - run remove_guard def.guard:<npc>
     interact scripts:
         - guard_interact_script
 
@@ -196,6 +218,7 @@ guard_interact_script:
                 exit:
                     script:
                         - if <player.flag[guards_follow]>:
+                            - lookclose false
                             - follow target:<player> lead:<proc[gs_data].context[guard.follow_lead]> speed:<proc[gs_data].context[guard.follow_speed]>
             chat trigger:
                 1:
