@@ -353,11 +353,11 @@ player_joins_respawn_guards:
 
 guard_shop_shopkeeper_chat_format:
     type: format
-    format: <proc[gs_data].context[shopkeeper.chat_name].unescaped.parse_color> <[text]>
+    format: <proc[gs_data].context[shopkeeper.chat_name]> <[text]>
 
 guard_chat_format:
     type: format
-    format: <proc[gs_data].context[guard.chat_name].unescaped.parse_color> <[text]>
+    format: <proc[gs_data].context[guard.chat_name]> <[text]>
 
 gs_data:
     type: procedure
