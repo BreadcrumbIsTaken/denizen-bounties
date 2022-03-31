@@ -56,7 +56,7 @@ guard_shop_config:
         no_purchace: No problem!
         # What to say when player is short on money.
         not_enough_money: Sorry, but it looks like you don't have enough money.
-        # What to say when player has enough guards
+        # What to say when player has enough guards.
         too_many_guards: Sorry, but you already have enough guards.
         # Proximity radius.
         proximity_radius: 5
@@ -75,28 +75,28 @@ guard_shop_config:
         follow_lead: 4
         # How fast to follow player.
         follow_speed: 1
-        # How much health the guard has
+        # How much health the guard has.
         health: 35
         # What item to put in guard's main hand.
         main_hand: iron_sword
         commands:
-            # Stop moving (don't follow)
+            # Stop moving (don't follow).
             stay: stay
-            # Continue following player
+            # Continue following player.
             follow: follow
-            # Despawn guard (temporarily). To respawn do /respawnguards
+            # Despawn guard (temporarily). To respawn do /respawnguards.
             despawn: despawn
-            # No attacking
+            # No attacking.
             passive: passive
-            # Become aggressive
+            # Become aggressive.
             aggressive: aggressive
-            # Permanatly removes guard
+            # Permanatly removes guard.
             remove: remove
         # Guard's name
         name: &6Guard
         # Shows up in chat before text.
         chat_name: &6Guard&r&co
-        # What to say when following a command
+        # What to say when following a command.
         command_reply: Okay!
         # How long until guard respawns in seconds.
         # 0 will disable automatic respawn.
@@ -123,7 +123,7 @@ guard_shop_config:
         follow_distance: 5
         # Despawns the guards when the player leaves.
         despawn_on_owner_leave: true
-        # Respawns the guards when the player joins
+        # Respawns the guards when the player joins.
         respawn_on_owner_join: true
 
 # Basic economy script. Change this however you want. If you already have one,
@@ -179,11 +179,12 @@ guard_shop_shopkeeper_interact_script:
                             - if <player.flag[money].is[or_more].than[<[price]>]>:
                                 - money take quantity:<[price]>
                                 - narrate <proc[gs_data].context[shopkeeper.purchace]> format:guard_shop_shopkeeper_chat_format
+                                # Spawns in the guard.
                                 - create player Guard <player.location> traits:sentinel save:guard
 
                                 - define guard <entry[guard].created_npc>
 
-                                # Spawns in the guard
+                                # Configures the guard.
                                 - flag <player> guards:->:<[guard]>
                                 - flag <[guard]> owner:<player>
                                 - assignment set script:personal_guard npc:<[guard]>
@@ -192,12 +193,14 @@ guard_shop_shopkeeper_interact_script:
                                 - health <[guard]> <proc[gs_data].context[guard.health]>
                                 - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
 
+                                # Sentinel things.
                                 - execute "sentinel guard <player.name> --id <[guard].id>" as_server
                                 - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server
                                 - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server
                                 - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server
                                 - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server
 
+                                # Adds targets, ignores, and avoids.
                                 - if !<proc[gs_data].context[guard.attacks].is_empty>:
                                     - foreach <proc[gs_data].context[guard.attacks]> as:i:
                                         - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server
@@ -207,8 +210,6 @@ guard_shop_shopkeeper_interact_script:
                                 - if !<proc[gs_data].context[guard.avoids].is_empty>:
                                     - foreach <proc[gs_data].context[guard.avoids]> as:i:
                                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
-
-                                - flag <player> guards_follow:true
                             - else:
                                 - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                         - else:
@@ -225,9 +226,6 @@ personal_guard:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
             - trigger name:chat state:true radius:<proc[gs_data].context[guard.proximity_radius]>
-        on attack:
-            - if <npc.flag[owner].flag[guards_follow]>:
-                - flag <npc.flag[owner]> guards_follow:!
     interact scripts:
         - guard_interact_script
 
@@ -244,7 +242,7 @@ guard_interact_script:
                         - lookclose false
             chat trigger:
                 1:
-                    # COMPLEATLY REMOVE GUARD
+                    # Deletes guard.
                     trigger: /<proc[gs_data].context[guard.commands.remove]>/
                     hide trigger message: true
                     script:
@@ -256,12 +254,14 @@ guard_interact_script:
                         - remove <npc>
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 2:
+                    # Stop following.
                     trigger: /<proc[gs_data].context[guard.commands.stay]>/
                     hide trigger message: true
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 3:
+                    # Start following.
                     trigger: /<proc[gs_data].context[guard.commands.follow]>/
                     hide trigger message: true
                     script:
@@ -269,6 +269,7 @@ guard_interact_script:
                         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 4:
+                    # Don't attack.
                     trigger: /<proc[gs_data].context[guard.commands.passive]>/
                     hide trigger message: true
                     script:
@@ -277,6 +278,7 @@ guard_interact_script:
                                 - execute "sentinel removetarget <[i]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 5:
+                    # Do attack.
                     trigger: /<proc[gs_data].context[guard.commands.aggressive]>/
                     hide trigger message: true
                     script:
@@ -285,6 +287,7 @@ guard_interact_script:
                                 - execute "sentinel addtarget <[i]> --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 6:
+                    # Despawn.
                     trigger: /<proc[gs_data].context[guard.commands.despawn]>/
                     hide trigger message: true
                     script:
@@ -298,6 +301,7 @@ respawn_guards:
     name: respawnguards
     description: Respawns your personal guards!
     script:
+        # Respawns the guards.
         - if <player.has_flag[guards_despawned]>:
             - foreach <player.flag[guards]> as:guard:
                 - spawn <[guard]> <player.location> persistent
@@ -320,11 +324,14 @@ reload_guards:
         - foreach <player.flag[guards]> as:guard:
             - define data <proc[gs_data].context[guard]>
             - define id <[guard].id>
+
+            # Updates sentinel info
             - execute "sentinel respawntime <[data].get[name]> --id <[id]>" as_server
             - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server
             - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server
             - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server
 
+            # Updates the targets, ignores, and avoids.
             - if !<[data].get[attacks].is_empty>:
                 - foreach <[data].get[attacks]> as:i:
                     - execute "sentinel addtarget <[i]> --id <[id]>" as_server
@@ -339,6 +346,7 @@ player_leaves_despawn_guards:
     type: world
     events:
         on player quits:
+            # Loops through all the player's guards and despawns them.
             - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
                 - foreach <player.flag[guards]> as:i:
                     - despawn <[i]>
@@ -347,18 +355,22 @@ player_joins_respawn_guards:
     type: world
     events:
         on player joins:
+            # Loops through all the player's guards and respawns them.
             - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
                 - foreach <player.flag[guards]> as:guard:
                     - spawn <[guard]> <player.location> persistent
 
+# Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
     type: format
     format: <proc[gs_data].context[shopkeeper.chat_name]> <[text]>
 
+# Chat format for guard.
 guard_chat_format:
     type: format
     format: <proc[gs_data].context[guard.chat_name]> <[text]>
 
+# Shorter than having to rewrite everything all over again.
 gs_data:
     type: procedure
     definitions: data_key
