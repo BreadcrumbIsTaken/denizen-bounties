@@ -25,7 +25,7 @@
 #
 # How to use:
 #   Configure all the config values below to whatever values you want.
-#   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/npc assignment --set guard_shop_shopkeeper)
+#   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/ex assignment add script:guard_shop_shopkeeper)
 #   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
 # Guard commands:
