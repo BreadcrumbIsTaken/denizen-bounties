@@ -175,7 +175,6 @@ guard_shop_shopkeeper_interact_script:
                                 - assignment set script:personal_guard npc:<[guard]>
                                 - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
                                 - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin_texture]>;<proc[gs_data].context[guard.skin_signature]>
-                                - health <[guard]> <proc[gs_data].context[guard.health]>
                                 - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
 
                                 # Sentinel things.
@@ -184,6 +183,7 @@ guard_shop_shopkeeper_interact_script:
                                 - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
                                 - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
                                 - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
+                                - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
 
                                 # Adds targets, ignores, and avoids.
                                 - if !<proc[gs_data].context[guard.attacks].is_empty>:
