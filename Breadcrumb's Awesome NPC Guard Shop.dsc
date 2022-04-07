@@ -286,6 +286,7 @@ respawn_guards:
     usage: /respawnguards
     name: respawnguards
     description: Respawns your personal guards!
+    permission: npcguardshop.respawn_guards
     script:
         # Respawns the guards.
         - if <player.has_flag[guards_despawned]>:
@@ -300,6 +301,7 @@ reload_guards_command:
     usage: /reloadguards
     name: reloadguards
     description: Reloads certain data for your personal guards.
+    permission: npcguardshop.reload_guards
     script:
         - run reload_guards
         - narrate "Guards reloaded!"
