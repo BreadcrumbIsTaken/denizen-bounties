@@ -129,6 +129,7 @@ guard_shop_shopkeeper:
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[shopkeeper.proximity_radius]>
+            - trigger name:chat state:true radius:<proc[gs_data].context[shopkeeper.proximity_radius]>
     interact scripts:
         - guard_shop_shopkeeper_interact_script
 
@@ -152,13 +153,13 @@ guard_shop_shopkeeper_interact_script:
                     trigger: /yes/
                     hide trigger message: true
                     script:
-                        - if !<player.has_flag[guard_ownership_amount]>:
-                            - flag <player> guard_ownership_amount:1
-                        - if !<player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
+                        - if <player.flag[guard_ownership_amount].if_null[0]> > <proc[gs_data].context[guard.guards_per_player]>:
                             - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
                         - else:
+                            - flag <player> guard_ownership_amount:++
+
                             - define price <proc[gs_data].context[guard.price]>
-                            - if !<player.flag[money]> >= <[price]>:
+                            - if <player.flag[money]> < <[price]>:
                                 - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                             - else:
                                 - money take quantity:<[price]>
@@ -194,6 +195,11 @@ guard_shop_shopkeeper_interact_script:
                                 - if !<proc[gs_data].context[guard.avoids].is_empty>:
                                     - foreach <proc[gs_data].context[guard.avoids]> as:i:
                                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
+                        # - if !<player.has_flag[guard_ownership_amount]>:
+                        #     - flag <player> guard_ownership_amount:1
+                        # - if !<player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
+                        #     - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
+                        # - else:
                 2:
                     trigger: /no/
                     hide trigger message: true
@@ -228,10 +234,7 @@ guard_interact_script:
                     hide trigger message: true
                     script:
                         - flag <player> guards:<-:<npc>
-                        - if <player.flag[guard_ownership_amount]> == 1:
-                            - flag <player> guard_ownership_amount:0
-                        - else:
-                            - flag <player> guard_ownership_amount:--
+                        - flag <player> guard_ownership_amount:--
                         - remove <npc>
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 2:
