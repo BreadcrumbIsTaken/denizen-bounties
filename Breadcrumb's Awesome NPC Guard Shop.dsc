@@ -23,7 +23,7 @@
 #   In game, use the command "/ex reload" to reload Denizen's scripts.
 #
 # How to use:
-#   Configure all the config values below to whatever values you want.
+#   Configure all the config values below and configure other places where there is a comment labled "CONFIG" to whatever values you want.
 #   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/ex assignment add script:guard_shop_shopkeeper)
 #   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
@@ -124,8 +124,6 @@ guard_shop_config:
         # Respawns the guards when the player joins.
         respawn_on_owner_join: true
 
-# --- Do not edit below this line. Let the script handle the rest ;) ---
-
 guard_shop_shopkeeper:
     type: assignment
     actions:
@@ -225,7 +223,8 @@ guard_interact_script:
             chat trigger:
                 1:
                     # Deletes guard.
-                    trigger: /<proc[gs_data].context[guard.commands.remove]>/
+                    # / CONFIG: Set the command to delete the guard. Is case insensitive.
+                    trigger: /remove/
                     hide trigger message: true
                     script:
                         - flag <player> guards:<-:<npc>
@@ -237,14 +236,16 @@ guard_interact_script:
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 2:
                     # Stop following.
-                    trigger: /<proc[gs_data].context[guard.commands.stay]>/
+                    # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
+                    trigger: /stay/
                     hide trigger message: true
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 3:
                     # Start following.
-                    trigger: /<proc[gs_data].context[guard.commands.follow]>/
+                    # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
+                    trigger: /follow/
                     hide trigger message: true
                     script:
                         - execute "sentinel guard <player.name> --id <npc.id>" as_server
@@ -252,7 +253,8 @@ guard_interact_script:
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 4:
                     # Don't attack.
-                    trigger: /<proc[gs_data].context[guard.commands.passive]>/
+                    # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
+                    trigger: /passive/
                     hide trigger message: true
                     script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
@@ -261,7 +263,8 @@ guard_interact_script:
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 5:
                     # Do attack.
-                    trigger: /<proc[gs_data].context[guard.commands.aggressive]>/
+                    # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
+                    trigger: /aggressive/
                     hide trigger message: true
                     script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
@@ -270,7 +273,8 @@ guard_interact_script:
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 6:
                     # Despawn.
-                    trigger: /<proc[gs_data].context[guard.commands.despawn]>/
+                    # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
+                    trigger: /despawn/
                     hide trigger message: true
                     script:
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
