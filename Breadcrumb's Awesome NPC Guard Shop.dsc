@@ -46,12 +46,12 @@ guard_shop_config:
         greeting: Welcome to the &3Guard Shop&r!
         # What to say when player exits proximity.
         goodbye: Goodbye!
-        # Purchace inquiry.
-        store_inquiry: Would you like to purchace your own personal guard? It is only $150! &e(yes/no)
+        # Purchase inquiry.
+        store_inquiry: Would you like to purchase your own personal guard? It is only $150! &e(yes/no)
         # What to say when player purchases.
-        purchace: Thank you for your purchace!
-        # What to say when player does not purchace.
-        no_purchace: No problem!
+        purchase: Thank you for your purchase!
+        # What to say when player does not purchase.
+        no_purchase: No problem!
         # What to say when player is short on money.
         not_enough_money: Sorry, but it looks like you don't have enough money.
         # What to say when player has enough guards.
@@ -158,7 +158,7 @@ guard_shop_shopkeeper_interact_script:
                             - define price <proc[gs_data].context[guard.price]>
                             - if <player.flag[money].is[or_more].than[<[price]>]>:
                                 - money take quantity:<[price]>
-                                - narrate <proc[gs_data].context[shopkeeper.purchace]> format:guard_shop_shopkeeper_chat_format
+                                - narrate <proc[gs_data].context[shopkeeper.purchase]> format:guard_shop_shopkeeper_chat_format
                                 # Spawns in the guard.
                                 - create player Guard <player.location> traits:sentinel save:guard
 
@@ -198,7 +198,7 @@ guard_shop_shopkeeper_interact_script:
                     trigger: /no|No|NO/
                     hide trigger message: true
                     script:
-                        - narrate <proc[gs_data].context[shopkeeper.no_purchace]> format:guard_shop_shopkeeper_chat_format
+                        - narrate <proc[gs_data].context[shopkeeper.no_purchase]> format:guard_shop_shopkeeper_chat_format
 
 personal_guard:
     type: assignment
