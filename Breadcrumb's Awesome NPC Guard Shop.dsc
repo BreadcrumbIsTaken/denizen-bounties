@@ -149,7 +149,7 @@ guard_shop_shopkeeper_interact_script:
                         - narrate <proc[gs_data].context[shopkeeper.goodbye]> format:guard_shop_shopkeeper_chat_format
             chat trigger:
                 1:
-                    trigger: /yes|Yes|YES/
+                    trigger: /yes/
                     hide trigger message: true
                     script:
                         - if !<player.has_flag[guard_ownership_amount]>:
@@ -195,7 +195,7 @@ guard_shop_shopkeeper_interact_script:
                         - else:
                             - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
                 2:
-                    trigger: /no|No|NO/
+                    trigger: /no/
                     hide trigger message: true
                     script:
                         - narrate <proc[gs_data].context[shopkeeper.no_purchase]> format:guard_shop_shopkeeper_chat_format
