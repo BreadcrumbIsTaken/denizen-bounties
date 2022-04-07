@@ -154,9 +154,13 @@ guard_shop_shopkeeper_interact_script:
                     script:
                         - if !<player.has_flag[guard_ownership_amount]>:
                             - flag <player> guard_ownership_amount:1
-                        - if <player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
+                        - if !<player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
+                            - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
+                        - else:
                             - define price <proc[gs_data].context[guard.price]>
-                            - if <player.flag[money].is[or_more].than[<[price]>]>:
+                            - if !<player.flag[money]> >= <[price]>:
+                                - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
+                            - else:
                                 - money take quantity:<[price]>
                                 - narrate <proc[gs_data].context[shopkeeper.purchase]> format:guard_shop_shopkeeper_chat_format
                                 # Spawns in the guard.
@@ -190,10 +194,6 @@ guard_shop_shopkeeper_interact_script:
                                 - if !<proc[gs_data].context[guard.avoids].is_empty>:
                                     - foreach <proc[gs_data].context[guard.avoids]> as:i:
                                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
-                            - else:
-                                - narrate <proc[gs_data].context[shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
-                        - else:
-                            - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
                 2:
                     trigger: /no/
                     hide trigger message: true
