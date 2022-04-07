@@ -195,11 +195,6 @@ guard_shop_shopkeeper_interact_script:
                                 - if !<proc[gs_data].context[guard.avoids].is_empty>:
                                     - foreach <proc[gs_data].context[guard.avoids]> as:i:
                                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
-                        # - if !<player.has_flag[guard_ownership_amount]>:
-                        #     - flag <player> guard_ownership_amount:1
-                        # - if !<player.flag[guard_ownership_amount]> <= <proc[gs_data].context[guard.guards_per_player]>:
-                        #     - narrate <proc[gs_data].context[shopkeeper.too_many_guards]> format:guard_shop_shopkeeper_chat_format
-                        # - else:
                 2:
                     trigger: /no/
                     hide trigger message: true
