@@ -11,12 +11,11 @@
 # @denizen-build REL-1762
 # @script-version 1.0
 #
-# Plugin dependancies:
+# Plugin dependencies:
 #   Denizen (to run this script)
 #   Citizens (NPCs)
 #   Sentinel (NPC combat!)
 #   Vault (economy)
-#   Depenizen (Denizen bridge)
 #
 # Installation:
 #   Install all the plugins required above and put them into your plugins folder.
