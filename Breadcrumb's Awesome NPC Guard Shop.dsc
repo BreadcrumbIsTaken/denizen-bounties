@@ -180,21 +180,21 @@ guard_shop_shopkeeper_interact_script:
 
                                 # Sentinel things.
                                 - execute "sentinel guard <player.name> --id <[guard].id>" as_server
-                                - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server
-                                - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server
-                                - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server
-                                - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server
+                                - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
+                                - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
+                                - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
+                                - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
 
                                 # Adds targets, ignores, and avoids.
                                 - if !<proc[gs_data].context[guard.attacks].is_empty>:
                                     - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server
+                                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
                                 - if !<proc[gs_data].context[guard.ignores].is_empty>:
                                     - foreach <proc[gs_data].context[guard.ignores]> as:i:
-                                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server
+                                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
                                 - if !<proc[gs_data].context[guard.avoids].is_empty>:
                                     - foreach <proc[gs_data].context[guard.avoids]> as:i:
-                                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server
+                                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
                 2:
                     trigger: /no/
                     hide trigger message: true
@@ -238,7 +238,7 @@ guard_interact_script:
                     trigger: /stay/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard --id <npc.id>" as_server
+                        - execute "sentinel guard --id <npc.id>" as_server silent
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 3:
                     # Start following.
@@ -246,8 +246,8 @@ guard_interact_script:
                     trigger: /follow/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard <player.name> --id <npc.id>" as_server
-                        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server
+                        - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
+                        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 4:
                     # Don't attack.
@@ -257,7 +257,7 @@ guard_interact_script:
                     script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                                - execute "sentinel removetarget <[i]> --id <npc.id>" as_server
+                                - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 5:
                     # Do attack.
@@ -267,7 +267,7 @@ guard_interact_script:
                     script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                                - execute "sentinel addtarget <[i]> --id <npc.id>" as_server
+                                - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
                         - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
                 6:
                     # Despawn.
@@ -312,21 +312,21 @@ reload_guards:
             - define id <[guard].id>
 
             # Updates sentinel info
-            - execute "sentinel respawntime <[data].get[name]> --id <[id]>" as_server
-            - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server
-            - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server
-            - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server
+            - execute "sentinel respawntime <[data].get[name]> --id <[id]>" as_server silent
+            - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server silent
+            - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server silent
+            - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server silent
 
             # Updates the targets, ignores, and avoids.
             - if !<[data].get[attacks].is_empty>:
                 - foreach <[data].get[attacks]> as:i:
-                    - execute "sentinel addtarget <[i]> --id <[id]>" as_server
+                    - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
             - if !<[data].get[ignores].is_empty>:
                 - foreach <[data].get[ignores]> as:i:
-                    - execute "sentinel addignore <[i]> --id <[id]>" as_server
+                    - execute "sentinel addignore <[i]> --id <[id]>" as_server silent
             - if !<[data].get[avoids].is_empty>:
                 - foreach <[data].get[avoids]> as:i:
-                    - execute "sentinel addavoid <[i]> --id <[id]>" as_server
+                    - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
 
 player_leaves_despawn_guards:
     type: world
