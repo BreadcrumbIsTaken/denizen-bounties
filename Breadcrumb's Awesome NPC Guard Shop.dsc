@@ -15,7 +15,6 @@
 #   Denizen (to run this script)
 #   Citizens (NPCs)
 #   Sentinel (NPC combat!)
-#   Vault (economy)
 #
 # Installation:
 #   Install all the plugins required above and put them into your plugins folder.
@@ -60,7 +59,7 @@ guard_shop_config:
         # Proximity radius.
         proximity_radius: 5
     guard:
-        # Price per guard.
+        # Price per guard. This assumes you already have an ecomomy system setup using Vault. If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
         price: 150
         # Texutre value for skin.
         skin_texture: ewogICJ0aW1lc3RhbXAiIDogMTY0MjkwMzc3Njg1NiwKICAicHJvZmlsZUlkIiA6ICJkMGI4MjE1OThmMTE0NzI1ODBmNmNiZTliOGUxYmU3MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJqYmFydHl5IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM5NDBlOTgyZGZiODg4NWE1NzQwODVmMDcwYjk5ZWM1ZjE0NzQ4YzE4Y2Q1M2Q2NzNmMzc3ZmUyNzRkZjFhNTkiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==
@@ -124,22 +123,6 @@ guard_shop_config:
         despawn_on_owner_leave: true
         # Respawns the guards when the player joins.
         respawn_on_owner_join: true
-
-# Basic economy script. Change this however you want. If you already have one,
-# than you can delete/comment this out.
-guard_shop_economy:
-    type: economy
-    priority: normal
-    name single: dollar
-    name plural: dollars
-    digits: 2
-    format: $<[amount]>
-    balance: <player.flag[money]>
-    has: <player.flag[money].is[or_more].than[<[amount]>]>
-    withdraw:
-        - flag <player> money:-:<[amount]>
-    deposit:
-        - flag <player> money:+:<[amount]>
 
 # --- Do not edit below this line. Let the script handle the rest ;) ---
 
