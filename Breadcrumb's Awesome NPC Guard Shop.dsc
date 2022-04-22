@@ -356,7 +356,7 @@ guard_chat_format:
     type: format
     format: <proc[gs_data].context[guard.chat_name]> <[text]>
 
-# Shorter than having to rewrite everything all over again.
+# Gets the data from the config at the top of the script.
 gs_data:
     type: procedure
     definitions: data_key
