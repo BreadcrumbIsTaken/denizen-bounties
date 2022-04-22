@@ -96,8 +96,6 @@ guard_shop_config:
         name: &6Guard
         # Shows up in chat before text.
         chat_name: &6Guard&r&co
-        # What to say when following a command.
-        command_reply: Okay!
         # How long until guard respawns in seconds.
         # 0 will disable automatic respawn.
         # -1 will delete the guard when killed.
@@ -233,7 +231,8 @@ guard_interact_script:
                         - flag <player> guards:<-:<npc>
                         - flag <player> guard_ownership_amount:--
                         - remove <npc>
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the Guard will say in chat when they are removed.
+                        - narrate Removed! format:guard_chat_format
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
@@ -241,7 +240,8 @@ guard_interact_script:
                     hide trigger message: true
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server silent
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the Guard will say in chat when they are told to stay.
+                        - narrate "I will stop following you." format:guard_chat_format
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
@@ -250,7 +250,8 @@ guard_interact_script:
                     script:
                         - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
                         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the Guard will say in chat when they are told to start following you.
+                        - narrate "I will start following you now." format:guard_chat_format
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
@@ -260,7 +261,8 @@ guard_interact_script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
                                 - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the Guard will say in chat when they are told to be passive.
+                        - narrate "I will not attack enemies." format:guard_chat_format
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
@@ -270,14 +272,16 @@ guard_interact_script:
                         - if !<proc[gs_data].context[guard.attacks].is_empty>:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
                                 - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
+                        - narrate "I will attack enemies when needed." format:guard_chat_format
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
                     trigger: /despawn/
                     hide trigger message: true
                     script:
-                        - narrate <proc[gs_data].context[guard.command_reply]> format:guard_chat_format
+                        # / CONFIG: What the guard will say in chat when they are told to desapwn.
+                        - narrate "See you later!" format:guard_chat_format
                         - flag <player> guards_despawned
                         - despawn
 
