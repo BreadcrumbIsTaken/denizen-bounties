@@ -165,7 +165,7 @@ guard_shop_shopkeeper_interact_script:
                                 - money take quantity:<[price]>
                                 - narrate <proc[gs_data].context[shopkeeper.purchase]> format:guard_shop_shopkeeper_chat_format
                                 # Spawns in the guard.
-                                - create player Guard <player.location> traits:sentinel save:guard
+                                - create player Guard <player.location.add[-1,0,-1]> traits:sentinel save:guard
 
                                 - define guard <entry[guard].created_npc>
 
