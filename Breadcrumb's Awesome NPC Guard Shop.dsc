@@ -8,7 +8,7 @@
 #
 # @author Breadcrumb
 # @date 2022-03-27
-# @denizen-build REL-1764
+# @denizen-build REL-1766
 # @script-version 1.0
 #
 # Plugin dependencies:
@@ -220,7 +220,7 @@ guard_interact_script:
                     script:
                         # / CONFIG: What the guard will say in chat when they are told to desapwn.
                         - narrate "See you later!" format:guard_chat_format
-                        - flag <player> guards_despawned
+                        - flag <player> despawned_guards:->:<npc>
                         - despawn
 
 buy_guard_inventory:
@@ -247,13 +247,13 @@ player_buys_a_guard:
                 # / CONFIG: What the shopkeeper will say when the player has enough guards.
                 - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
             - else:
-                - flag <player> guard_ownership_amount:++
-
                 - define price <proc[gs_data].context[guard.price]>
                 - if <player.flag[money]> < <[price]>:
                     # / CONFIG: What the shopkeeper will say when the player does not have enough money.
                     - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
                 - else:
+                    - flag <player> guard_ownership_amount:++
+                    - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
                     - money take quantity:<[price]>
                     # Spawns in the guard.
                     - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
@@ -262,7 +262,7 @@ player_buys_a_guard:
 
                     # Configures the guard.
                     - flag <player> guards:->:<[guard]>
-                    - flag <[guard]> owner:<player>
+                    # - flag <[guard]> owner:<player>
                     - assignment set script:personal_guard npc:<[guard]>
                     - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
@@ -300,20 +300,19 @@ guard_head_clickable:
     mechanisms:
         skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
 
-respawn_guards:
+spawn_guards:
     type: command
-    usage: /respawnguards
-    name: respawnguards
-    description: Respawns your personal guards!
-    permission: npcguardshop.respawn_guards
+    usage: /spawnguards
+    name: spawnguards
+    description: Spawns your personal guards!
+    permission: npcguardshop.spawn_guards
     script:
-        # Respawns the guards.
-        - if <player.has_flag[guards_despawned]>:
-            - foreach <player.flag[guards]> as:guard:
-                - spawn <[guard]> <player.location> persistent
-            - flag <player> guards_despawned:!
-        - else:
-            - narrate <proc[gs_data].context[respawn_command_error]>
+        # Spawns in any unspawned guards.
+        - foreach <player.flag[despawned_guards]> as:guard:
+            - spawn <[guard]> <player.location.add[1,0,1]> persistent
+            - flag <player> despawned_guards:<-:<[guard]>
+            # / CONFIG: What the Guard should say when they are spawned back in.
+            - narrate "Hello! I'm back!" format:guard_chat_format
 
 reload_guards_command:
     type: command
