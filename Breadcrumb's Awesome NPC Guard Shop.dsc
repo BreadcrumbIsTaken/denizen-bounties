@@ -256,7 +256,7 @@ player_buys_a_guard:
                 - else:
                     - money take quantity:<[price]>
                     # Spawns in the guard.
-                    - create player Guard <player.location.add[-1,0,-1]> traits:sentinel save:guard
+                    - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
 
                     - define guard <entry[guard].created_npc>
 
@@ -287,7 +287,7 @@ player_buys_a_guard:
                         - foreach <proc[gs_data].context[guard.avoids]> as:i:
                             - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
 
-                    - wait .3s
+                    - wait 1s
                     # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
                     - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
                     - narrate "Say the following commands in chat to tell your guard what to do:<n><yellow>Passive<white> - Tells the guard to not fight any entities.<n><yellow>Aggresive<white> - Tells the guard to fight any entities that may cause you harm.<n><yellow>Stay<white> - Tells the guard to stop following you around.<n><yellow>Follow<white> - Tells the guard to start following you around.<n><yellow>Despawn<white> - Tells the guard to despawn temporarily.<n><yellow>Remove<white> - Tells the guard to despawn PERMANANTLY!" format:guard_shop_shopkeeper_chat_format
