@@ -269,7 +269,7 @@ player_buys_a_guard:
                     - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
 
                     # Sentinel things.
-                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server
+                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
                     - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
                     - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
                     - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
