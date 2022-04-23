@@ -310,7 +310,7 @@ guard_head_clickable:
     lore:
         - <white>Price:<green> $<proc[gs_data].context[guard.price]>
     mechanisms:
-        skull_skin: 864f1f7f-5995-466e-b70f-41871f98683e|<proc[gs_data].context[guard.skin.texture]>
+        skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
 
 respawn_guards:
     type: command
