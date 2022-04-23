@@ -303,6 +303,7 @@ player_buys_a_guard:
                     - flag <player> guard_ownership_amount:++
                     - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
                     - money take quantity:<[price]>
+
                     # Spawns in the guard.
                     - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
 
@@ -312,10 +313,12 @@ player_buys_a_guard:
                     - flag <player> guards:->:<[guard]>
                     # Default statuses.
                     - flag <[guard]> statuses:<list[following|aggressive]>
+
                     - assignment set script:personal_guard npc:<[guard]>
                     - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
                     - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
+                    - adjust <[guard]> owner:<player>
 
                     # Sentinel things.
                     - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
