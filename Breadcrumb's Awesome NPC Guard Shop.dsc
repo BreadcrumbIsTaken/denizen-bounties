@@ -180,6 +180,9 @@ guard_interact_script:
                         - execute "sentinel guard --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to stay.
                         - narrate "I will stop following you." format:guard_chat_format
+                        - if <npc.flag[statuses].contains[following]>:
+                            - flag <npc> statuses:<-:following
+                        - flag <npc> statuses:->:staying
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
@@ -190,6 +193,9 @@ guard_interact_script:
                         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to start following you.
                         - narrate "I will start following you now." format:guard_chat_format
+                        - if <npc.flag[statuses].contains[staying]>:
+                            - flag <npc> statuses:<-:staying
+                        - flag <npc> statuses:->:following
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
@@ -201,6 +207,9 @@ guard_interact_script:
                                 - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be passive.
                         - narrate "I will not attack enemies." format:guard_chat_format
+                        - if <npc.flag[statuses].contains[aggressive]>:
+                            - flag <npc> statuses:<-:aggressive
+                        - flag <npc> statuses:->:passive
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
@@ -212,6 +221,9 @@ guard_interact_script:
                                 - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
                         - narrate "I will attack enemies when needed." format:guard_chat_format
+                        - if <npc.flag[statuses].contains[passive]>:
+                            - flag <npc> statuses:<-:passive
+                        - flag <npc> statuses:->:aggressive
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
@@ -221,7 +233,43 @@ guard_interact_script:
                         # / CONFIG: What the guard will say in chat when they are told to desapwn.
                         - narrate "See you later!" format:guard_chat_format
                         - flag <player> despawned_guards:->:<npc>
+                        - flag <npc> statuses:->:despawned
                         - despawn
+
+guard_list_inventory:
+    type: inventory
+    inventory: chest
+    title: <&3>Guards
+    gui: true
+    procedural items:
+        - define items <list[]>
+        - foreach <player.flag[guards]> as:guard:
+            - define display Guard
+            - define lore <list[<white>Statuses:]>
+            - foreach <[guard].flag[statuses]> as:status:
+                - define "lore:->:<white>- <blue><[status].to_titlecase>"
+            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]]>
+            - define items:->:<[item]>
+        - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
+        - determine <[items]>
+    slots:
+        - [] [] [] [] [] [] [] [] []
+        - [] [] [] [] [] [] [] [] []
+        - [] [] [] [] [] [] [] [] []
+        - [] [] [] [] [] [] [] [] []
+        - [] [] [] [] [] [] [] [] []
+
+open_guard_list_inventory:
+    type: command
+    name: guardlist
+    usage: /guardlist
+    description: Lists all the guards you own and their statuses.
+    permission: npcguardshop.open_guard_list
+    aliases:
+        - openguardlist
+        - listguards
+    script:
+        - inventory open d:guard_list_inventory
 
 buy_guard_inventory:
     type: inventory
@@ -262,7 +310,8 @@ player_buys_a_guard:
 
                     # Configures the guard.
                     - flag <player> guards:->:<[guard]>
-                    # - flag <[guard]> owner:<player>
+                    # Default statuses.
+                    - flag <[guard]> statuses:<list[following|aggressive]>
                     - assignment set script:personal_guard npc:<[guard]>
                     - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
