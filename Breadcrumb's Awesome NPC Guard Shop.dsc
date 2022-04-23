@@ -112,6 +112,10 @@ guard_shop_config:
         despawn_on_owner_leave: true
         # Respawns the guards when the player joins.
         respawn_on_owner_join: true
+        # The maximum attack range of the Guard.
+        attack_range: 3
+        # The maximum distance and NPC will chase an entity.
+        chase_range: 30
 
 guard_shop_shopkeeper:
     type: assignment
@@ -327,6 +331,8 @@ player_buys_a_guard:
                     - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
                     - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
                     - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
+                    - execute "sentinel range <proc[gs_data].context[guard.attack_range]> --id <[guard].id>" as_server silent
+                    - execute "sentinel chaserange <proc[gs_data].context[guard.chase_range]> --id <[guard].id>" as_server silent
 
                     # Adds targets, ignores, and avoids.
                     - foreach <proc[gs_data].context[guard.attacks]> as:i:
