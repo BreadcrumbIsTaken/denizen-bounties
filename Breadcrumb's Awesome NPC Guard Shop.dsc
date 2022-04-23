@@ -400,7 +400,7 @@ reload_guards:
 player_leaves_despawn_guards:
     type: world
     events:
-        on player quits:
+        on player quits flagged:guards:
             # Loops through all the player's guards and despawns them.
             - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
                 - foreach <player.flag[guards]> as:i:
@@ -409,7 +409,7 @@ player_leaves_despawn_guards:
 player_joins_respawn_guards:
     type: world
     events:
-        on player joins:
+        on player joins flagged:guards:
             # Loops through all the player's guards and respawns them.
             - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
                 - foreach <player.flag[guards]> as:guard:
