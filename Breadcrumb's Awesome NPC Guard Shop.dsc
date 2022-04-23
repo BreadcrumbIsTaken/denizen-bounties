@@ -277,15 +277,12 @@ player_buys_a_guard:
                     - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
 
                     # Adds targets, ignores, and avoids.
-                    - if !<proc[gs_data].context[guard.attacks].is_empty>:
-                        - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                            - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-                    - if !<proc[gs_data].context[guard.ignores].is_empty>:
-                        - foreach <proc[gs_data].context[guard.ignores]> as:i:
-                            - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
-                    - if !<proc[gs_data].context[guard.avoids].is_empty>:
-                        - foreach <proc[gs_data].context[guard.avoids]> as:i:
-                            - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
+                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
+                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
+                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
 
                     - wait 1s
                     # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
