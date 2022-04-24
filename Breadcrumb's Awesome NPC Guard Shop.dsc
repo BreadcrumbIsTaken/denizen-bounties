@@ -304,7 +304,8 @@ guard_list_inventory:
             - define lore <list[<white>Statuses:]>
             - foreach <[guard].flag[statuses]> as:status:
                 - define "lore:->:<white>- <blue><[status].to_titlecase>"
-            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]]>
+            - define "lore:->:<white>Left click to edit!"
+            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
             - define items:->:<[item]>
         - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
         - determine <[items]>
@@ -314,6 +315,83 @@ guard_list_inventory:
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
         - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_howto] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
+
+edit_guard_inventory:
+    type: inventory
+    inventory: chest
+    title: GUARD
+    gui: true
+    procedural items:
+        - determine <item[gray_stained_glass_pane].repeat_as_list[27]>
+    slots:
+        - [] [] [] [] [guard_head_clickable] [] [] [] []
+        - [] [] [] [] [] [] [] [] []
+        - [] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
+
+edit_guard_data_from_inventory:
+    type: world
+    events:
+        on player clicks guard_head_clickable in guard_list_inventory:
+            - define inventory <inventory[edit_guard_inventory]>
+            - define guard <context.item.flag[guard]>
+
+            - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
+            - inventory adjust d:<[inventory]> slot:5 "lore:Edit this guard!"
+            - define passive_or_aggressive
+            - foreach <[guard].flag[statuses]> as:status:
+                - if <[status]> == passive:
+                    - define passive_or_aggressive:passive
+                - else if <[status]> == aggressive:
+                    - define passive_or_aggressive:aggressive
+            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Click to toggle ggressiveness.|<white>Currently: <blue><[passive_or_aggressive]>"
+            - define following_or_not_following
+            - foreach <[guard].flag[statuses]> as:status:
+                - if <[status]> == following:
+                    - define following_or_not_following:following
+                - else if <[status]> == staying:
+                    - define following_or_not_following:staying
+            - inventory adjust d:<[inventory]> slot:25 "lore:<white>Click to toggle following.|<white>Currently: <blue><[following_or_not_following]>"
+
+            - adjust <[inventory]> title:<[guard].name>
+            - inventory open d:<[inventory]>
+
+remove_item:
+    type: item
+    material: barrier
+    display name: <red>Remove Guard
+    lore:
+        - <white>Left click to
+        - <white>permanently remove
+        - <white>this guard.
+
+despawn_item:
+    type: item
+    material: firework_star
+    display name: <red>Despawn Guard
+    lore:
+        - <white>Left click to
+        - <white>despawn this
+        - <white>guard.
+
+spawn_item:
+    type: item
+    material: sunflower
+    display name: <red>Spawn Guard
+    lore:
+        - <white>Left click to
+        - <white>spawn this
+        - <white>guard if
+        - <white>they are despawned.
+
+toggle_aggressiveness_item:
+    type: item
+    material: feather
+    display name: <red>Toggle Aggressiveness
+
+toggle_following_item:
+    type: item
+    material: lead
+    display name: <red>Toggle Following
 
 open_guard_list_inventory:
     type: command
