@@ -68,19 +68,6 @@ guard_shop_config:
         health: 35
         # What item to put in guard's main hand.
         main_hand: iron_sword
-        commands:
-            # Stop moving (don't follow).
-            stay: stay
-            # Continue following player.
-            follow: follow
-            # Despawn guard (temporarily). To respawn do /respawnguards.
-            despawn: despawn
-            # No attacking.
-            passive: passive
-            # Become aggressive.
-            aggressive: aggressive
-            # Permanatly removes guard.
-            remove: remove
         # Guard's name
         name: &6Guard
         # Shows up in chat before text.
