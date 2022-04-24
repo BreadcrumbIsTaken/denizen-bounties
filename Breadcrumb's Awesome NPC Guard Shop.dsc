@@ -217,80 +217,114 @@ guard_interact_script:
                     trigger: /remove/
                     hide trigger message: true
                     script:
-                        - flag <player> guards:<-:<npc>
-                        - flag <player> guard_ownership_amount:--
-                        # / CONFIG: What the Guard will say in chat when they are removed.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: Removed!"
-                        - remove <npc>
+                       - run remove_guard def.guard:<npc>
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
                     trigger: /stay/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard --id <npc.id>" as_server silent
-                        # / CONFIG: What the Guard will say in chat when they are told to stay.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will stop following you."
-                        - if !<npc.flag[statuses].contains[staying]>:
-                            - if <npc.flag[statuses].contains[following]>:
-                                - flag <npc> statuses:<-:following
-                            - flag <npc> statuses:->:staying
+                        - run stop_following def.guard:<npc>
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
                     trigger: /follow/
                     hide trigger message: true
                     script:
-                        - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
-                        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
-                        # / CONFIG: What the Guard will say in chat when they are told to start following you.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will start following you."
-                        - if !<npc.flag[statuses].contains[following]>:
-                            - if <npc.flag[statuses].contains[staying]>:
-                                - flag <npc> statuses:<-:staying
-                            - flag <npc> statuses:->:following
+                        - run start_following def.guard:<npc>
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
                     trigger: /passive/
                     hide trigger message: true
                     script:
-                        - if !<proc[gs_data].context[guard.attacks].is_empty>:
-                            - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                                - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
-                        # / CONFIG: What the Guard will say in chat when they are told to be passive.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will not attack enemies."
-                        - if !<npc.flag[statuses].contains[passive]>:
-                            - if <npc.flag[statuses].contains[aggressive]>:
-                                - flag <npc> statuses:<-:aggressive
-                            - flag <npc> statuses:->:passive
+                        - run become_passive def.guard:<npc>
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
                     trigger: /aggressive/
                     hide trigger message: true
                     script:
-                        - if !<proc[gs_data].context[guard.attacks].is_empty>:
-                            - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                                - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
-                        # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will attack enemies!"
-                        - if !<npc.flag[statuses].contains[aggressive]>:
-                            - if <npc.flag[statuses].contains[passive]>:
-                                - flag <npc> statuses:<-:passive
-                            - flag <npc> statuses:->:aggressive
+                        - run become_aggressive def.guard:<npc>
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
                     trigger: /despawn/
                     hide trigger message: true
                     script:
-                        # / CONFIG: What the guard will say in chat when they are told to desapwn.
-                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: See you later!"
-                        - flag <player> despawned_guards:->:<npc>
-                        - if !<npc.flag[statuses].contains[despawned]>:
-                            - flag <npc> statuses:->:despawned
-                        - despawn
+                        - run despawn_guard def.guard:<npc>
+
+remove_guard:
+    type: task
+    definitions: guard
+    script:
+        - flag <player> guards:<-:<[guard]>
+        - flag <player> guard_ownership_amount:--
+        # / CONFIG: What the Guard will say in chat when they are removed.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Removed!"
+        - remove <[guard]>
+
+stop_following:
+    type: task
+    definitions: guard
+    script:
+        - execute "sentinel guard --id <[guard].id>" as_server silent
+        # / CONFIG: What the Guard will say in chat when they are told to stay.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will stop following you."
+        - if !<[guard].flag[statuses].contains[staying]>:
+            - if <[guard].flag[statuses].contains[following]>:
+                - flag <[guard]> statuses:<-:following
+            - flag <[guard]> statuses:->:staying
+
+start_following:
+    type: task
+    definitions: guard
+    script:
+        - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
+        # / CONFIG: What the Guard will say in chat when they are told to start following you.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will start following you."
+        - if !<[guard].flag[statuses].contains[following]>:
+            - if <[guard].flag[statuses].contains[staying]>:
+                - flag <[guard]> statuses:<-:staying
+            - flag <[guard]> statuses:->:following
+
+become_passive:
+    type: task
+    definitions: guard
+    script:
+        - foreach <proc[gs_data].context[guard.attacks]> as:i:
+            - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
+        # / CONFIG: What the Guard will say in chat when they are told to be passive.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will not attack enemies."
+        - if !<[guard].flag[statuses].contains[passive]>:
+            - if <[guard].flag[statuses].contains[aggressive]>:
+                - flag <[guard]> statuses:<-:aggressive
+            - flag <[guard]> statuses:->:passive
+
+become_aggressive:
+    type: task
+    definitions: guard
+    script:
+        - foreach <proc[gs_data].context[guard.attacks]> as:i:
+            - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+        # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will attack enemies!"
+        - if !<[guard].flag[statuses].contains[aggressive]>:
+            - if <[guard].flag[statuses].contains[passive]>:
+                - flag <[guard]> statuses:<-:passive
+            - flag <[guard]> statuses:->:aggressive
+
+despawn_guard:
+    type: task
+    definitions: guard
+    script:
+        # / CONFIG: What the guard will say in chat when they are told to desapwn.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: See you later!"
+        - flag <player> despawned_guards:->:<[guard]>
+        - if !<[guard].flag[statuses].contains[despawned]>:
+            - flag <[guard]> statuses:->:despawned
+        - despawn
 
 guard_list_inventory:
     type: inventory
