@@ -143,6 +143,64 @@ guard_shop_shopkeeper_interact_script:
                         # / CONFIG: What the shopkeeper should say when the player leaves the proximity.
                         - narrate Goodbye! format:guard_shop_shopkeeper_chat_format
 
+player_buys_a_guard:
+    type: world
+    events:
+        on player clicks guard_head_clickable in buy_guard_inventory:
+            - inventory close
+
+            - if <player.flag[guard_ownership_amount].if_null[0]> > <proc[gs_data].context[guard.guards_per_player]>:
+                # / CONFIG: What the shopkeeper will say when the player has enough guards.
+                - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
+            - else:
+                - define price <proc[gs_data].context[guard.price]>
+                - if <player.flag[money]> < <[price]>:
+                    # / CONFIG: What the shopkeeper will say when the player does not have enough money.
+                    - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
+                - else:
+                    - flag <player> guard_ownership_amount:++
+                    - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
+                    - money take quantity:<[price]>
+
+                    # Spawns in the guard.
+                    - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
+
+                    - define guard <entry[guard].created_npc>
+
+                    # Configures the guard.
+                    - flag <player> guards:->:<[guard]>
+                    # Default statuses.
+                    - flag <[guard]> statuses:<list[following|aggressive]>
+
+                    - assignment set script:personal_guard npc:<[guard]>
+                    - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
+                    - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
+                    - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
+                    - adjust <[guard]> owner:<player>
+
+                    # Sentinel things.
+                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+                    - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
+                    - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
+                    - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
+                    - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
+                    - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
+                    - execute "sentinel range <proc[gs_data].context[guard.attack_range]> --id <[guard].id>" as_server silent
+                    - execute "sentinel chaserange <proc[gs_data].context[guard.chase_range]> --id <[guard].id>" as_server silent
+
+                    # Adds targets, ignores, and avoids.
+                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
+                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
+                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
+                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+
+                    - wait 1s
+                    # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
+                    - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
+                    - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
+
 personal_guard:
     type: assignment
     actions:
@@ -288,64 +346,6 @@ buy_guard_inventory:
     - [] [] [] [] [guard_head_clickable] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-
-player_buys_a_guard:
-    type: world
-    events:
-        on player clicks guard_head_clickable in buy_guard_inventory:
-            - inventory close
-
-            - if <player.flag[guard_ownership_amount].if_null[0]> > <proc[gs_data].context[guard.guards_per_player]>:
-                # / CONFIG: What the shopkeeper will say when the player has enough guards.
-                - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
-            - else:
-                - define price <proc[gs_data].context[guard.price]>
-                - if <player.flag[money]> < <[price]>:
-                    # / CONFIG: What the shopkeeper will say when the player does not have enough money.
-                    - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
-                - else:
-                    - flag <player> guard_ownership_amount:++
-                    - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
-                    - money take quantity:<[price]>
-
-                    # Spawns in the guard.
-                    - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
-
-                    - define guard <entry[guard].created_npc>
-
-                    # Configures the guard.
-                    - flag <player> guards:->:<[guard]>
-                    # Default statuses.
-                    - flag <[guard]> statuses:<list[following|aggressive]>
-
-                    - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
-                    - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
-                    - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
-                    - adjust <[guard]> owner:<player>
-
-                    # Sentinel things.
-                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
-                    - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
-                    - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
-                    - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
-                    - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
-                    - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
-                    - execute "sentinel range <proc[gs_data].context[guard.attack_range]> --id <[guard].id>" as_server silent
-                    - execute "sentinel chaserange <proc[gs_data].context[guard.chase_range]> --id <[guard].id>" as_server silent
-
-                    # Adds targets, ignores, and avoids.
-                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
-                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
-                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
-
-                    - wait 1s
-                    # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
-                    - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
-                    - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
 
 # Guard head for "buy_guard_inventory"
 # / CONFIG: Configure the "display name" and "lore" however you want!
