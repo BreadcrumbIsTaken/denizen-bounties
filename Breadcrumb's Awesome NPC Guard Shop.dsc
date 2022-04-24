@@ -261,7 +261,7 @@ guard_list_inventory:
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
-        - [] [] [] [] [] [] [] [] []
+        - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_tip] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
 
 open_guard_list_inventory:
     type: command
@@ -345,7 +345,7 @@ player_buys_a_guard:
                     - wait 1s
                     # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
                     - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
-                    - narrate "Say the following commands in chat to tell your guard what to do:<n><yellow>Passive<white> - Tells the guard to not fight any entities.<n><yellow>Aggresive<white> - Tells the guard to fight any entities that may cause you harm.<n><yellow>Stay<white> - Tells the guard to stop following you around.<n><yellow>Follow<white> - Tells the guard to start following you around.<n><yellow>Despawn<white> - Tells the guard to despawn temporarily.<n><yellow>Remove<white> - Tells the guard to despawn PERMANANTLY!" format:guard_shop_shopkeeper_chat_format
+                    - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
 
 # Guard head for "buy_guard_inventory"
 # / CONFIG: Configure the "display name" and "lore" however you want!
@@ -357,6 +357,31 @@ guard_head_clickable:
         - <white>Price:<green> $<proc[gs_data].context[guard.price]>
     mechanisms:
         skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
+
+guard_list_tip:
+    type: item
+    material: player_head
+    display name: <green>Tip<&co>
+    mechanisms:
+        skull_skin: 917ad1d9-0807-4a28-ac5f-bd7a8f1b64e9|eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmEyYWZhN2JiMDYzYWMxZmYzYmJlMDhkMmM1NThhN2RmMmUyYmFjZGYxNWRhYzJhNjQ2NjJkYzQwZjhmZGJhZCJ9fX0=
+    lore:
+        - <white>Say the following commands in chat to tell
+        - <white>your guard what to do.<&co>
+        - <yellow>Passive<white> - Tells the guard to not
+        - <white>fight any entities.
+        - <yellow>Aggresive<white> - Tells the guard to fight
+        - <white>any entities that may cause you harm.
+        - <yellow>Stay<white> - Tells the guard to stop following
+        - <white>you around.
+        - <yellow>Follow<white> - Tells the guard to start
+        - <white>following you around.
+        - <yellow>Despawn<white> - Tells the guard to
+        - <white> despawn temporarily.
+        - <yellow>Remove<white> - Tells the guard to
+        - <white> despawn PERMANANTLY!
+        - <white>To spawn in any despawned Guards,
+        - <white>use the command<&co>
+        - <yellow>/spawnguards
 
 spawn_guards:
     type: command
