@@ -219,9 +219,9 @@ guard_interact_script:
                     script:
                         - flag <player> guards:<-:<npc>
                         - flag <player> guard_ownership_amount:--
-                        - remove <npc>
                         # / CONFIG: What the Guard will say in chat when they are removed.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: Removed!"
+                        - remove <npc>
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
@@ -231,9 +231,10 @@ guard_interact_script:
                         - execute "sentinel guard --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to stay.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will stop following you."
-                        - if <npc.flag[statuses].contains[following]>:
-                            - flag <npc> statuses:<-:following
-                        - flag <npc> statuses:->:staying
+                        - if !<npc.flag[statuses].contains[staying]>:
+                            - if <npc.flag[statuses].contains[following]>:
+                                - flag <npc> statuses:<-:following
+                            - flag <npc> statuses:->:staying
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
@@ -244,9 +245,10 @@ guard_interact_script:
                         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to start following you.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will start following you."
-                        - if <npc.flag[statuses].contains[staying]>:
-                            - flag <npc> statuses:<-:staying
-                        - flag <npc> statuses:->:following
+                        - if !<npc.flag[statuses].contains[following]>:
+                            - if <npc.flag[statuses].contains[staying]>:
+                                - flag <npc> statuses:<-:staying
+                            - flag <npc> statuses:->:following
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
@@ -258,9 +260,10 @@ guard_interact_script:
                                 - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be passive.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will not attack enemies."
-                        - if <npc.flag[statuses].contains[aggressive]>:
-                            - flag <npc> statuses:<-:aggressive
-                        - flag <npc> statuses:->:passive
+                        - if !<npc.flag[statuses].contains[passive]>:
+                            - if <npc.flag[statuses].contains[aggressive]>:
+                                - flag <npc> statuses:<-:aggressive
+                            - flag <npc> statuses:->:passive
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
@@ -272,9 +275,10 @@ guard_interact_script:
                                 - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will attack enemies!"
-                        - if <npc.flag[statuses].contains[passive]>:
-                            - flag <npc> statuses:<-:passive
-                        - flag <npc> statuses:->:aggressive
+                        - if !<npc.flag[statuses].contains[aggressive]>:
+                            - if <npc.flag[statuses].contains[passive]>:
+                                - flag <npc> statuses:<-:passive
+                            - flag <npc> statuses:->:aggressive
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
@@ -284,7 +288,8 @@ guard_interact_script:
                         # / CONFIG: What the guard will say in chat when they are told to desapwn.
                         - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: See you later!"
                         - flag <player> despawned_guards:->:<npc>
-                        - flag <npc> statuses:->:despawned
+                        - if !<npc.flag[statuses].contains[despawned]>:
+                            - flag <npc> statuses:->:despawned
                         - despawn
 
 guard_list_inventory:
@@ -383,8 +388,9 @@ spawn_guards:
         - foreach <player.flag[despawned_guards]> as:guard:
             - spawn <[guard]> <player.location.add[1,0,1]> persistent
             - flag <player> despawned_guards:<-:<[guard]>
+            - flag <[guard]> statuses:<-:despawned
             # / CONFIG: What the Guard should say when they are spawned back in.
-            - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: Hello! I'm back!"
+            - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Hello! I'm back!"
 
 reload_guards_command:
     type: command
