@@ -41,7 +41,7 @@ guard_shop_config:
     respawn_command_error: You can only use this command when you have despawned guards!
     shopkeeper:
         # Shows up in chat before text.
-        chat_name: &cShopkeeper&r&co
+        chat_name: &cShopkeeper&r
         # Proximity radius.
         proximity_radius: 5
     guard:
@@ -84,7 +84,7 @@ guard_shop_config:
         # Guard's name
         name: &6Guard
         # Shows up in chat before text.
-        chat_name: &6Guard&r&co
+        chat_name: &6Guard
         # How long until guard respawns in seconds.
         # 0 will disable automatic respawn.
         # -1 will delete the guard when killed.
@@ -158,7 +158,6 @@ player_buys_a_guard:
                     # / CONFIG: What the shopkeeper will say when the player does not have enough money.
                     - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
                 - else:
-                    - flag <player> guard_ownership_amount:++
                     - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
                     - money take quantity:<[price]>
 
@@ -172,8 +171,11 @@ player_buys_a_guard:
                     # Default statuses.
                     - flag <[guard]> statuses:<list[following|aggressive]>
 
+                    - flag <[guard]> guard_number:<player.flag[guard_ownership_amount].if_null[0].add[1]>
+                    - flag <player> guard_ownership_amount:++
+
                     - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> name:<proc[gs_data].context[guard.name]>
+                    - adjust <[guard]> "name:<proc[gs_data].context[guard.name]> <[guard].flag[guard_number]>"
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
                     - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
                     - adjust <[guard]> owner:<player>
@@ -232,7 +234,7 @@ guard_interact_script:
                         - flag <player> guard_ownership_amount:--
                         - remove <npc>
                         # / CONFIG: What the Guard will say in chat when they are removed.
-                        - narrate Removed! format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: Removed!"
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
@@ -241,7 +243,7 @@ guard_interact_script:
                     script:
                         - execute "sentinel guard --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to stay.
-                        - narrate "I will stop following you." format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will stop following you."
                         - if <npc.flag[statuses].contains[following]>:
                             - flag <npc> statuses:<-:following
                         - flag <npc> statuses:->:staying
@@ -254,7 +256,7 @@ guard_interact_script:
                         - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
                         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to start following you.
-                        - narrate "I will start following you now." format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will start following you."
                         - if <npc.flag[statuses].contains[staying]>:
                             - flag <npc> statuses:<-:staying
                         - flag <npc> statuses:->:following
@@ -268,7 +270,7 @@ guard_interact_script:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
                                 - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be passive.
-                        - narrate "I will not attack enemies." format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will not attack enemies."
                         - if <npc.flag[statuses].contains[aggressive]>:
                             - flag <npc> statuses:<-:aggressive
                         - flag <npc> statuses:->:passive
@@ -282,7 +284,7 @@ guard_interact_script:
                             - foreach <proc[gs_data].context[guard.attacks]> as:i:
                                 - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
                         # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
-                        - narrate "I will attack enemies when needed." format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: I will attack enemies!"
                         - if <npc.flag[statuses].contains[passive]>:
                             - flag <npc> statuses:<-:passive
                         - flag <npc> statuses:->:aggressive
@@ -293,7 +295,7 @@ guard_interact_script:
                     hide trigger message: true
                     script:
                         # / CONFIG: What the guard will say in chat when they are told to desapwn.
-                        - narrate "See you later!" format:guard_chat_format
+                        - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: See you later!"
                         - flag <player> despawned_guards:->:<npc>
                         - flag <npc> statuses:->:despawned
                         - despawn
@@ -306,7 +308,7 @@ guard_list_inventory:
     procedural items:
         - define items <list[]>
         - foreach <player.flag[guards]> as:guard:
-            - define display Guard
+            - define display "Guard <[guard].flag[guard_number]>"
             - define lore <list[<white>Statuses:]>
             - foreach <[guard].flag[statuses]> as:status:
                 - define "lore:->:<white>- <blue><[status].to_titlecase>"
@@ -395,7 +397,7 @@ spawn_guards:
             - spawn <[guard]> <player.location.add[1,0,1]> persistent
             - flag <player> despawned_guards:<-:<[guard]>
             # / CONFIG: What the Guard should say when they are spawned back in.
-            - narrate "Hello! I'm back!" format:guard_chat_format
+            - narrate "<proc[gs_data].context[guard.chat_name]> <npc.flag[guard_number]><reset>: Hello! I'm back!"
 
 reload_guards_command:
     type: command
@@ -451,12 +453,7 @@ player_joins_respawn_guards:
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
     type: format
-    format: <proc[gs_data].context[shopkeeper.chat_name]> <[text]>
-
-# Chat format for guard.
-guard_chat_format:
-    type: format
-    format: <proc[gs_data].context[guard.chat_name]> <[text]>
+    format: <proc[gs_data].context[shopkeeper.chat_name]>: <[text]>
 
 # Gets the data from the config at the top of the script.
 gs_data:
