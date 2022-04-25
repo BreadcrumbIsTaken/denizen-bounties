@@ -28,7 +28,7 @@
 #   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
 # Guard commands:
-#   When in the proximity range specified in the "guard_shop_config" container, you can give the guards commands by typing them in chat.
+#   When in the proximity range specified in the "guard_shop_config" container, you can give the guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard..
 #   The commands are "stay", "follow", "passive", "aggressive", and "remove".
 #   The "stay" command will make the guards not follow the owner when the owner moves outside of the guard's proximity range.
 #   The "follow" command will make the guards follow the owner again.
@@ -324,7 +324,17 @@ despawn_guard:
         - flag <player> despawned_guards:->:<[guard]>
         - if !<[guard].flag[statuses].contains[despawned]>:
             - flag <[guard]> statuses:->:despawned
-        - despawn
+        - despawn <[guard]>
+
+spawn_guard:
+    type: task
+    definitions: guard
+    script:
+        - spawn <[guard]> <player.location.add[1,0,1]> persistent
+        - flag <player> despawned_guards:<-:<[guard]>
+        - flag <[guard]> statuses:<-:despawned
+        # / CONFIG: What the Guard should say when they are spawned back in.
+        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Hello! I'm back!"
 
 guard_list_inventory:
     type: inventory
@@ -371,23 +381,50 @@ edit_guard_data_from_inventory:
 
             - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
             - inventory adjust d:<[inventory]> slot:5 "lore:Edit this guard!"
-            - define passive_or_aggressive
             - foreach <[guard].flag[statuses]> as:status:
                 - if <[status]> == passive:
                     - define passive_or_aggressive:passive
                 - else if <[status]> == aggressive:
                     - define passive_or_aggressive:aggressive
-            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Click to toggle ggressiveness.|<white>Currently: <blue><[passive_or_aggressive]>"
-            - define following_or_not_following
-            - foreach <[guard].flag[statuses]> as:status:
                 - if <[status]> == following:
                     - define following_or_not_following:following
                 - else if <[status]> == staying:
                     - define following_or_not_following:staying
+            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Click to toggle ggressiveness.|<white>Currently: <blue><[passive_or_aggressive]>"
             - inventory adjust d:<[inventory]> slot:25 "lore:<white>Click to toggle following.|<white>Currently: <blue><[following_or_not_following]>"
+
+            - inventory flag d:<[inventory]> slot:24 status:<[passive_or_aggressive]>
+            - inventory flag d:<[inventory]> slot:25 status:<[following_or_not_following]>
+
+            - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
+            - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
+            - inventory flag d:<[inventory]> slot:23 guard:<[guard]>
+            - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
+            - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
 
             - adjust <[inventory]> title:<[guard].name>
             - inventory open d:<[inventory]>
+        on player clicks remove_item in edit_guard_inventory:
+            - inventory close
+            - run remove_guard def.guard:<context.item.flag[guard]>
+        on player clicks despawn_item in edit_guard_inventory:
+            - inventory close
+            - run despawn_guard def.guard:<context.item.flag[guard]>
+        on player clicks spawn_item in edit_guard_inventory:
+            - inventory close
+            - run spawn_guard def.guard:<context.item.flag[guard]>
+        on player clicks toggle_aggressiveness_item in edit_guard_inventory:
+            - inventory close
+            - if <context.item.flag[status]> == passive:
+                - run become_aggressive def.guard:<context.item.flag[guard]>
+            - else:
+                - run become_passive def.guard:<context.item.flag[guard]>
+        on player clicks toggle_following_item in edit_guard_inventory:
+            - inventory close
+            - if <context.item.flag[status]> == following:
+                - run stop_following def.guard:<context.item.flag[guard]>
+            - else:
+                - run start_following def.guard:<context.item.flag[guard]>
 
 remove_item:
     type: item
@@ -498,11 +535,7 @@ spawn_guards:
     script:
         # Spawns in any unspawned guards.
         - foreach <player.flag[despawned_guards]> as:guard:
-            - spawn <[guard]> <player.location.add[1,0,1]> persistent
-            - flag <player> despawned_guards:<-:<[guard]>
-            - flag <[guard]> statuses:<-:despawned
-            # / CONFIG: What the Guard should say when they are spawned back in.
-            - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Hello! I'm back!"
+            - run spawn_guard def.guard:<[guard]>
 
 reload_guards_command:
     type: command
@@ -553,7 +586,7 @@ player_joins_respawn_guards:
             # Loops through all the player's guards and respawns them.
             - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
                 - foreach <player.flag[guards]> as:guard:
-                    - spawn <[guard]> <player.location> persistent
+                    - spawn <[guard]> <player.location.add[1,0,1]> persistent
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
