@@ -424,10 +424,17 @@ edit_guard_data_from_inventory:
             - run remove_guard def.guard:<context.item.flag[guard]>
         on player clicks despawn_item in edit_guard_inventory:
             - inventory close
-            - run despawn_guard def.guard:<context.item.flag[guard]>
+            - if !<context.item.flag[guard].has_flag[despawned]>:
+                - run despawn_guard def.guard:<context.item.flag[guard]>
+            - else:
+                - narrate "<context.item.flag[guard].name><reset>: I am already despawned!"
         on player clicks spawn_item in edit_guard_inventory:
             - inventory close
-            - run spawn_guard def.guard:<context.item.flag[guard]>
+            - if <context.item.flag[guard].has_flag[despawned]>:
+                - run spawn_guard def.guard:<context.item.flag[guard]>
+            - else:
+                # / CONFIG: What to say when the Guard is already spawned when tried to be spawned in.
+                - narrate "<context.item.flag[guard].name><reset>: I am already spawned!"
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
             - inventory close
             - if <context.item.flag[status]> == passive:
