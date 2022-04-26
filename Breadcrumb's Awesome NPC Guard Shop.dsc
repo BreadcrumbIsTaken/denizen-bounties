@@ -161,11 +161,10 @@ player_buys_a_guard:
                     # Default statuses.
                     - flag <[guard]> statuses:<list[following|aggressive]>
 
-                    - flag <[guard]> guard_number:<player.flag[guard_ownership_amount].if_null[0].add[1]>
                     - flag <player> guard_ownership_amount:++
 
                     - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> "name:<proc[gs_data].context[guard.name]> <[guard].flag[guard_number]>"
+                    - adjust <[guard]> "name:<proc[gs_data].context[guard.name]> <player.flag[guard_ownership_amount].if_null[0].add[1]>"
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
                     - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
                     - adjust <[guard]> owner:<player>
@@ -267,7 +266,7 @@ remove_guard:
         - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
         # / CONFIG: What the Guard will say in chat when they are removed.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Removed!"
+        - narrate "<context.item.flag[guard].name><reset>: Removed!"
         - remove <[guard]>
 
 # Task to stop a Guard from following you.
@@ -277,7 +276,7 @@ stop_following:
     script:
         - execute "sentinel guard --id <[guard].id>" as_server silent
         # / CONFIG: What the Guard will say in chat when they are told to stay.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will stop following you."
+        - narrate "<context.item.flag[guard].name><reset>: I will stop following you."
         - if !<[guard].flag[statuses].contains[staying]>:
             - if <[guard].flag[statuses].contains[following]>:
                 - flag <[guard]> statuses:<-:following
@@ -291,7 +290,7 @@ start_following:
         - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
         # / CONFIG: What the Guard will say in chat when they are told to start following you.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will start following you."
+        - narrate "<context.item.flag[guard].name><reset>: I will start following you."
         - if !<[guard].flag[statuses].contains[following]>:
             - if <[guard].flag[statuses].contains[staying]>:
                 - flag <[guard]> statuses:<-:staying
@@ -305,7 +304,7 @@ become_passive:
         - foreach <proc[gs_data].context[guard.attacks]> as:i:
             - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
         # / CONFIG: What the Guard will say in chat when they are told to be passive.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will not attack enemies."
+        - narrate "<context.item.flag[guard].name><reset>: I will not attack enemies."
         - if !<[guard].flag[statuses].contains[passive]>:
             - if <[guard].flag[statuses].contains[aggressive]>:
                 - flag <[guard]> statuses:<-:aggressive
@@ -319,7 +318,7 @@ become_aggressive:
         - foreach <proc[gs_data].context[guard.attacks]> as:i:
             - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
         # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: I will attack enemies!"
+        - narrate "<context.item.flag[guard].name><reset>: I will attack enemies!"
         - if !<[guard].flag[statuses].contains[aggressive]>:
             - if <[guard].flag[statuses].contains[passive]>:
                 - flag <[guard]> statuses:<-:passive
@@ -331,7 +330,7 @@ despawn_guard:
     definitions: guard
     script:
         # / CONFIG: What the guard will say in chat when they are told to desapwn.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: See you later!"
+        - narrate "<context.item.flag[guard].name><reset>: See you later!"
         - flag <player> despawned_guards:->:<[guard]>
         - if !<[guard].flag[statuses].contains[despawned]>:
             - flag <[guard]> statuses:->:despawned
@@ -346,7 +345,7 @@ spawn_guard:
         - flag <player> despawned_guards:<-:<[guard]>
         - flag <[guard]> statuses:<-:despawned
         # / CONFIG: What the Guard should say when they are spawned back in.
-        - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Hello! I'm back!"
+        - narrate "<context.item.flag[guard].name><reset>: Hello! I'm back!"
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
@@ -357,7 +356,7 @@ guard_list_inventory:
     procedural items:
         - define items <list[]>
         - foreach <player.flag[guards]> as:guard:
-            - define display "Guard <[guard].flag[guard_number]>"
+            - define display <[guard].name>
             - define lore <list[<white>Statuses:]>
             - foreach <[guard].flag[statuses]> as:status:
                 - define "lore:->:<white>- <blue><[status].to_titlecase>"
