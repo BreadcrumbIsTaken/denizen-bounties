@@ -107,6 +107,7 @@ guard_shop_config:
 # Assign this assignment to any NPC to turn it into a shopkeeper for a Guard shop.
 guard_shop_shopkeeper:
     type: assignment
+    debug: false
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[shopkeeper.proximity_radius]>
@@ -116,6 +117,7 @@ guard_shop_shopkeeper:
 # The interact script for the Guard shop shopkeeper.
 guard_shop_shopkeeper_interact_script:
     type: interact
+    debug: false
     steps:
         1:
             proximity trigger:
@@ -135,6 +137,7 @@ guard_shop_shopkeeper_interact_script:
 # The event that fires when the player purchaces a guard.
 player_buys_a_guard:
     type: world
+    debug: false
     events:
         on player clicks guard_head_clickable in buy_guard_inventory:
             - inventory close
@@ -196,6 +199,7 @@ player_buys_a_guard:
 # Guard assignment script.
 personal_guard:
     type: assignment
+    debug: false
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
@@ -206,6 +210,7 @@ personal_guard:
 # Guard interact script.
 guard_interact_script:
     type: interact
+    debug: false
     steps:
         1:
             proximity trigger:
@@ -263,6 +268,7 @@ guard_interact_script:
 remove_guard:
     type: task
     definitions: guard
+    debug: false
     script:
         - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
@@ -275,6 +281,7 @@ remove_guard:
 stop_following:
     type: task
     definitions: guard
+    debug: false
     script:
         - execute "sentinel guard --id <[guard].id>" as_server silent
         # / CONFIG: What the Guard will say in chat when they are told to stay.
@@ -288,6 +295,7 @@ stop_following:
 start_following:
     type: task
     definitions: guard
+    debug: false
     script:
         - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
         - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
@@ -302,6 +310,7 @@ start_following:
 become_passive:
     type: task
     definitions: guard
+    debug: false
     script:
         - foreach <proc[gs_data].context[guard.attacks]> as:i:
             - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
@@ -316,6 +325,7 @@ become_passive:
 become_aggressive:
     type: task
     definitions: guard
+    debug: false
     script:
         - foreach <proc[gs_data].context[guard.attacks]> as:i:
             - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
@@ -330,6 +340,7 @@ become_aggressive:
 despawn_guard:
     type: task
     definitions: guard
+    debug: false
     script:
         # / CONFIG: What the guard will say in chat when they are told to desapwn.
         - narrate "<[guard].name><reset>: See you later!"
@@ -343,6 +354,7 @@ despawn_guard:
 spawn_guard:
     type: task
     definitions: guard
+    debug: false
     script:
         # / CONFIG: What the Guard should say when they are spawned back in.
         - narrate "<[guard].name><reset>: Hello! I'm back!"
@@ -394,6 +406,7 @@ edit_guard_inventory:
 # The event that fires to open the Guard edit inventory, which sets up all the dynamic items and their lore.
 edit_guard_data_from_inventory:
     type: world
+    debug: false
     events:
         on player clicks guard_head_clickable in guard_list_inventory:
             - define inventory <inventory[edit_guard_inventory]>
@@ -503,6 +516,7 @@ open_guard_list_inventory:
     usage: /guardlist
     description: Lists all the guards you own and their statuses.
     permission: npcguardshop.open_guard_list
+    debug: false
     aliases:
         - openguardlist
         - listguards
@@ -568,6 +582,7 @@ spawn_guards:
     name: spawnguards
     description: Spawns your personal guards!
     permission: npcguardshop.spawn_guards
+    debug: false
     script:
         # Spawns in any unspawned guards.
         - foreach <player.flag[despawned_guards]> as:guard:
@@ -580,6 +595,7 @@ reload_guards_command:
     name: reloadguards
     description: Reloads certain data for your personal guards.
     permission: npcguardshop.reload_guards
+    debug: false
     script:
         - run reload_guards
         - narrate "Guards reloaded!"
@@ -587,6 +603,7 @@ reload_guards_command:
 # Task to reload the Guards.
 reload_guards:
     type: task
+    debug: false
     script:
         - foreach <player.flag[guards]> as:guard:
             - define data <proc[gs_data].context[guard]>
@@ -611,6 +628,7 @@ reload_guards:
 # Despawn Guards when the player leaves if set.
 player_leaves_despawn_guards:
     type: world
+    debug: false
     events:
         on player quits flagged:guards:
             # Loops through all the player's guards and despawns them.
@@ -621,6 +639,7 @@ player_leaves_despawn_guards:
 # Respawn Guards when the player leaves if set.
 player_joins_respawn_guards:
     type: world
+    debug: false
     events:
         on player joins flagged:guards:
             # Loops through all the player's guards and respawns them.
@@ -631,11 +650,13 @@ player_joins_respawn_guards:
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
     type: format
+    debug: false
     format: <proc[gs_data].context[shopkeeper.chat_name]>: <[text]>
 
 # Gets the data from the config at the top of the script.
 gs_data:
     type: procedure
     definitions: data_key
+    debug: false
     script:
         - determine <script[guard_shop_config].data_key[<[data_key]>].unescaped.parse_color>
