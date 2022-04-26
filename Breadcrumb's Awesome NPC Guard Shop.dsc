@@ -371,7 +371,7 @@ guard_list_inventory:
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
-        - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_howto] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
+        - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_tip] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
 
 # The inventory that lets you edit a Guard.
 edit_guard_inventory:
@@ -523,14 +523,15 @@ guard_head_clickable:
     mechanisms:
         skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
 
-guard_list_howto:
+guard_list_tip:
     type: item
     material: player_head
     display name: <green>How to Use Your Guard<&co>
     mechanisms:
         skull_skin: 917ad1d9-0807-4a28-ac5f-bd7a8f1b64e9|eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmEyYWZhN2JiMDYzYWMxZmYzYmJlMDhkMmM1NThhN2RmMmUyYmFjZGYxNWRhYzJhNjQ2NjJkYzQwZjhmZGJhZCJ9fX0=
     lore:
-        - <white>Say the following commands in chat to tell
+        - <white>You can also say the following
+        - <white>commands in chat to tell
         - <white>your guard what to do.<&co>
         - <yellow>Passive<white> - Tells the guard to not
         - <white>fight any entities.
