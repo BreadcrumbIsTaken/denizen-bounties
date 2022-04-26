@@ -159,7 +159,7 @@ player_buys_a_guard:
                     # Configures the guard.
                     - flag <player> guards:->:<[guard]>
                     # Default statuses.
-                    - flag <[guard]> statuses:<list[following|aggressive]>
+                    - flag <[guard]> statuses:<list[following|aggressive|spawned]>
 
                     - define guard_number <player.flag[guard_ownership_amount].if_null[0].add[1]>
                     - flag <player> guard_ownership_amount:++
@@ -266,6 +266,7 @@ remove_guard:
     script:
         - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
+        - flag <[guard]> statuses:!
         # / CONFIG: What the Guard will say in chat when they are removed.
         - narrate "<[guard].name><reset>: Removed!"
         - remove <[guard]>
@@ -332,21 +333,25 @@ despawn_guard:
     script:
         # / CONFIG: What the guard will say in chat when they are told to desapwn.
         - narrate "<[guard].name><reset>: See you later!"
-        - flag <player> despawned_guards:->:<[guard]>
         - if !<[guard].flag[statuses].contains[despawned]>:
+            - if <[guard].flag[statuses].contains[spawned]>:
+                - flag <[guard]> statuses:<-:spawned
             - flag <[guard]> statuses:->:despawned
-        - despawn <[guard]>
+            - despawn <[guard]>
 
 # Task to spawn the Guard.
 spawn_guard:
     type: task
     definitions: guard
     script:
-        - spawn <[guard]> <player.location.add[1,0,1]> persistent
-        - flag <player> despawned_guards:<-:<[guard]>
-        - flag <[guard]> statuses:<-:despawned
         # / CONFIG: What the Guard should say when they are spawned back in.
         - narrate "<[guard].name><reset>: Hello! I'm back!"
+        - if !<[guard].flag[statuses].contains[spawned]>:
+            - if <[guard].flag[statuses].contains[despawned]>:
+                - flag <[guard]> statuses:<-:despawned
+            - flag <[guard]> statuses:->:spawned
+            - flag <player> despawned_guards:<-:<[guard]>
+            - spawn <[guard]> <player.location.add[1,0,1]> persistent
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
@@ -424,13 +429,13 @@ edit_guard_data_from_inventory:
             - run remove_guard def.guard:<context.item.flag[guard]>
         on player clicks despawn_item in edit_guard_inventory:
             - inventory close
-            - if !<context.item.flag[guard].has_flag[despawned]>:
+            - if <context.item.flag[guard].flag[statuses].contains[spawned]>:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 - narrate "<context.item.flag[guard].name><reset>: I am already despawned!"
         on player clicks spawn_item in edit_guard_inventory:
             - inventory close
-            - if <context.item.flag[guard].has_flag[despawned]>:
+            - if <context.item.flag[guard].flag[statuses].contains[despawned]>:
                 - run spawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 # / CONFIG: What to say when the Guard is already spawned when tried to be spawned in.
