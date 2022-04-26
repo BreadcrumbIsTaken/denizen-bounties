@@ -104,6 +104,7 @@ guard_shop_config:
         # The maximum distance and NPC will chase an entity.
         chase_range: 30
 
+# Assign this assignment to any NPC to turn it into a shopkeeper for a Guard shop.
 guard_shop_shopkeeper:
     type: assignment
     actions:
@@ -112,6 +113,7 @@ guard_shop_shopkeeper:
     interact scripts:
         - guard_shop_shopkeeper_interact_script
 
+# The interact script for the Guard shop shopkeeper.
 guard_shop_shopkeeper_interact_script:
     type: interact
     steps:
@@ -130,6 +132,7 @@ guard_shop_shopkeeper_interact_script:
                         # / CONFIG: What the shopkeeper should say when the player leaves the proximity.
                         - narrate Goodbye! format:guard_shop_shopkeeper_chat_format
 
+# The event that fires when the player purchaces a guard.
 player_buys_a_guard:
     type: world
     events:
@@ -190,6 +193,7 @@ player_buys_a_guard:
                     - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
                     - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
 
+# Guard assignment script.
 personal_guard:
     type: assignment
     actions:
@@ -199,6 +203,7 @@ personal_guard:
     interact scripts:
         - guard_interact_script
 
+# Guard interact script.
 guard_interact_script:
     type: interact
     steps:
@@ -254,6 +259,7 @@ guard_interact_script:
                     script:
                         - run despawn_guard def.guard:<npc>
 
+# Task to remove a Guard.
 remove_guard:
     type: task
     definitions: guard
@@ -264,6 +270,7 @@ remove_guard:
         - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Removed!"
         - remove <[guard]>
 
+# Task to stop a Guard from following you.
 stop_following:
     type: task
     definitions: guard
@@ -276,6 +283,7 @@ stop_following:
                 - flag <[guard]> statuses:<-:following
             - flag <[guard]> statuses:->:staying
 
+# Task to make the Guard follow you.
 start_following:
     type: task
     definitions: guard
@@ -289,6 +297,7 @@ start_following:
                 - flag <[guard]> statuses:<-:staying
             - flag <[guard]> statuses:->:following
 
+# Task to make the Guard passive.
 become_passive:
     type: task
     definitions: guard
@@ -302,6 +311,7 @@ become_passive:
                 - flag <[guard]> statuses:<-:aggressive
             - flag <[guard]> statuses:->:passive
 
+# Task to make the Guard aggressive.
 become_aggressive:
     type: task
     definitions: guard
@@ -315,6 +325,7 @@ become_aggressive:
                 - flag <[guard]> statuses:<-:passive
             - flag <[guard]> statuses:->:aggressive
 
+# Task to despawn the Guard.
 despawn_guard:
     type: task
     definitions: guard
@@ -326,6 +337,7 @@ despawn_guard:
             - flag <[guard]> statuses:->:despawned
         - despawn <[guard]>
 
+# Task to spawn the Guard.
 spawn_guard:
     type: task
     definitions: guard
@@ -336,6 +348,7 @@ spawn_guard:
         # / CONFIG: What the Guard should say when they are spawned back in.
         - narrate "<proc[gs_data].context[guard.chat_name]> <[guard].flag[guard_number]><reset>: Hello! I'm back!"
 
+# The inventory that lists all the Guards.
 guard_list_inventory:
     type: inventory
     inventory: chest
@@ -360,6 +373,7 @@ guard_list_inventory:
         - [] [] [] [] [] [] [] [] []
         - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_howto] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
 
+# The inventory that lets you edit a Guard.
 edit_guard_inventory:
     type: inventory
     inventory: chest
@@ -372,6 +386,7 @@ edit_guard_inventory:
         - [] [] [] [] [] [] [] [] []
         - [] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
 
+# The event that fires to open the Guard edit inventory, which sets up all the dynamic items and their lore.
 edit_guard_data_from_inventory:
     type: world
     events:
@@ -426,6 +441,7 @@ edit_guard_data_from_inventory:
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
 
+# Remove Guard item for "edit_guard_inventory".
 remove_item:
     type: item
     material: barrier
@@ -435,6 +451,7 @@ remove_item:
         - <white>permanently remove
         - <white>this guard.
 
+# Despawn Guard item for "edit_guard_inventory".
 despawn_item:
     type: item
     material: firework_star
@@ -444,6 +461,7 @@ despawn_item:
         - <white>despawn this
         - <white>guard.
 
+# Spawn Guard item for "edit_guard_inventory".
 spawn_item:
     type: item
     material: sunflower
@@ -454,16 +472,19 @@ spawn_item:
         - <white>guard if
         - <white>they are despawned.
 
+# Toggle Guard aggressiveness item for "edit_guard_inventory".
 toggle_aggressiveness_item:
     type: item
     material: feather
     display name: <red>Toggle Aggressiveness
 
+# Toggle Guard following item for "edit_guard_inventory".
 toggle_following_item:
     type: item
     material: lead
     display name: <red>Toggle Following
 
+# Opens the guard list.
 open_guard_list_inventory:
     type: command
     name: guardlist
@@ -476,6 +497,7 @@ open_guard_list_inventory:
     script:
         - inventory open d:guard_list_inventory
 
+# Inventory to buy a Guard for the shopkeeper.
 buy_guard_inventory:
     type: inventory
     inventory: chest
@@ -526,6 +548,7 @@ guard_list_howto:
         - <white>use the command<&co>
         - <yellow>/spawnguards
 
+# Command to spawn the Guards.
 spawn_guards:
     type: command
     usage: /spawnguards
@@ -537,6 +560,7 @@ spawn_guards:
         - foreach <player.flag[despawned_guards]> as:guard:
             - run spawn_guard def.guard:<[guard]>
 
+# Command to reload the Guards.
 reload_guards_command:
     type: command
     usage: /reloadguards
@@ -547,6 +571,7 @@ reload_guards_command:
         - run reload_guards
         - narrate "Guards reloaded!"
 
+# Task to reload the Guards.
 reload_guards:
     type: task
     script:
@@ -570,6 +595,7 @@ reload_guards:
             - foreach <[data].get[avoids]> as:i:
                 - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
 
+# Despawn Guards when the player leaves if set.
 player_leaves_despawn_guards:
     type: world
     events:
@@ -579,6 +605,7 @@ player_leaves_despawn_guards:
                 - foreach <player.flag[guards]> as:i:
                     - despawn <[i]>
 
+# Respawn Guards when the player leaves if set.
 player_joins_respawn_guards:
     type: world
     events:
