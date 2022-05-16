@@ -39,7 +39,6 @@
 
 guard_shop_config:
     type: data
-    respawn_command_error: You can only use this command when you have despawned guards!
     shopkeeper:
         # Shows up in chat before text.
         chat_name: &cShopkeeper&r
