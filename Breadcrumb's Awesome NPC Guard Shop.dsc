@@ -16,6 +16,7 @@
 #   Denizen (to run this script)
 #   Citizens (NPCs)
 #   Sentinel (NPC combat!)
+#   Vault (Economy)
 #
 # Installation:
 #   Install all the plugins required above and put them into your plugins folder.
@@ -147,7 +148,7 @@ player_buys_a_guard:
                 - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
             - else:
                 - define price <proc[gs_data].context[guard.price]>
-                - if <player.flag[money]> < <[price]>:
+                - if <player.money> < <[price]>:
                     # / CONFIG: What the shopkeeper will say when the player does not have enough money.
                     - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
                 - else:
