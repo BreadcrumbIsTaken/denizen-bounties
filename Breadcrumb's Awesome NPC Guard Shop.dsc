@@ -369,6 +369,7 @@ spawn_guard:
 # The inventory that lists all the Guards.
 guard_list_inventory:
     type: inventory
+    debug: false
     inventory: chest
     title: <&3>Guards
     gui: true
@@ -396,6 +397,7 @@ guard_list_inventory:
 # The inventory that lets you edit a Guard.
 edit_guard_inventory:
     type: inventory
+    debug: false
     inventory: chest
     title: GUARD
     gui: true
@@ -472,6 +474,7 @@ edit_guard_data_from_inventory:
 # Remove Guard item for "edit_guard_inventory".
 remove_item:
     type: item
+    debug: false
     material: barrier
     display name: <red>Remove Guard
     lore:
@@ -482,6 +485,7 @@ remove_item:
 # Despawn Guard item for "edit_guard_inventory".
 despawn_item:
     type: item
+    debug: false
     material: firework_star
     display name: <red>Despawn Guard
     lore:
@@ -492,6 +496,7 @@ despawn_item:
 # Spawn Guard item for "edit_guard_inventory".
 spawn_item:
     type: item
+    debug: false
     material: sunflower
     display name: <red>Spawn Guard
     lore:
@@ -503,23 +508,25 @@ spawn_item:
 # Toggle Guard aggressiveness item for "edit_guard_inventory".
 toggle_aggressiveness_item:
     type: item
+    debug: false
     material: feather
     display name: <red>Toggle Aggressiveness
 
 # Toggle Guard following item for "edit_guard_inventory".
 toggle_following_item:
     type: item
+    debug: false
     material: lead
     display name: <red>Toggle Following
 
 # Opens the guard list.
 open_guard_list_inventory:
     type: command
+    debug: false
     name: guardlist
     usage: /guardlist
     description: Lists all the guards you own and their statuses.
     permission: npcguardshop.open_guard_list
-    debug: false
     aliases:
         - openguardlist
         - listguards
@@ -529,6 +536,7 @@ open_guard_list_inventory:
 # Inventory to buy a Guard for the shopkeeper.
 buy_guard_inventory:
     type: inventory
+    debug: false
     inventory: chest
     title: <&3>Guard Shop
     gui: true
@@ -545,6 +553,7 @@ buy_guard_inventory:
 # / CONFIG: Configure the "display name" and "lore" however you want!
 guard_head_clickable:
     type: item
+    debug: false
     material: player_head
     display name: Purchase a Guard!
     lore:
@@ -554,6 +563,7 @@ guard_head_clickable:
 
 guard_list_tip:
     type: item
+    debug: false
     material: player_head
     display name: <green>How to Use Your Guard<&co>
     mechanisms:
