@@ -376,17 +376,18 @@ guard_list_inventory:
     procedural items:
         - define items <list[]>
         - if !<player.has_flag[guards]>:
-            - narrate "You do not currently have any guards!" format:guard_shop_error_format
-        - foreach <player.flag[guards]> as:guard:
-            - define display <[guard].name>
-            - define lore <list[<white>Statuses:]>
-            - foreach <[guard].flag[statuses]> as:status:
-                - define "lore:->:<white>- <blue><[status].to_titlecase>"
-            - define "lore:->:<white>Left click to edit!"
-            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
-            - define items:->:<[item]>
-        - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
-        - determine <[items]>
+            - determine <item[gray_stained_glass_pane].repeat_as_list[54]>
+        - else:
+            - foreach <player.flag[guards]> as:guard:
+                - define display <[guard].name>
+                - define lore <list[<white>Statuses:]>
+                - foreach <[guard].flag[statuses]> as:status:
+                    - define "lore:->:<white>- <blue><[status].to_titlecase>"
+                - define "lore:->:<white>Left click to edit!"
+                - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
+                - define items:->:<[item]>
+            - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
+            - determine <[items]>
     slots:
         - [] [] [] [] [] [] [] [] []
         - [] [] [] [] [] [] [] [] []
