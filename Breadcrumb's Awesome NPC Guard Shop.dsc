@@ -673,17 +673,19 @@ guard_shop_shopkeeper_chat_format:
     debug: false
     format: <proc[gs_data].context[shopkeeper.chat_name]>: <[text]>
 
+# Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
     type: format
     debug: false
     format: <&lb><red><bold>ERROR<reset><&rb><&co> <[text]>
 
+# Command finished format for when a non-Guard related task is completed.
 guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><green>Done!<reset><&rb><&co> <[text]>
 
-# Gets the data from the config at the top of the script.
+# This is a procedure to get any passed in config values from the `guard_shop_config` data script container and return them unespaced and parsed.
 gs_data:
     type: procedure
     definitions: data_key
