@@ -135,7 +135,7 @@ guard_shop_shopkeeper_interact_script:
                         # / CONFIG: What the shopkeeper should say when the player leaves the proximity.
                         - narrate Goodbye! format:guard_shop_shopkeeper_chat_format
 
-# The event that fires when the player purchaces a guard.
+# The event that fires when the player purchases a guard.
 player_buys_a_guard:
     type: world
     debug: false
@@ -193,8 +193,8 @@ player_buys_a_guard:
                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
 
                     - wait 1s
-                    # / CONFIG: What the shopkeeper will say when the player purchaces a Guard.
-                    - narrate "Thank you for your purchace!" format:guard_shop_shopkeeper_chat_format
+                    # / CONFIG: What the shopkeeper will say when the player purchases a Guard.
+                    - narrate "Thank you for your purchase!" format:guard_shop_shopkeeper_chat_format
                     - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
 
 # Guard assignment script.
@@ -546,7 +546,7 @@ buy_guard_inventory:
 guard_head_clickable:
     type: item
     material: player_head
-    display name: Purchace a Guard!
+    display name: Purchase a Guard!
     lore:
         - <white>Price:<green> $<proc[gs_data].context[guard.price]>
     mechanisms:
