@@ -364,7 +364,7 @@ spawn_guard:
                 - flag <[guard]> statuses:<-:despawned
             - flag <[guard]> statuses:->:spawned
             - flag <player> despawned_guards:<-:<[guard]>
-            - spawn <[guard]> <player.location.add[1,0,1]> persistent
+            - spawn <[guard]> <player.location.add[1,0,1]>
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
@@ -665,7 +665,7 @@ player_joins_respawn_guards:
             # Loops through all the player's guards and respawns them.
             - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
                 - foreach <player.flag[guards]> as:guard:
-                    - spawn <[guard]> <player.location.add[1,0,1]> persistent
+                    - spawn <[guard]> <player.location.add[1,0,1]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
