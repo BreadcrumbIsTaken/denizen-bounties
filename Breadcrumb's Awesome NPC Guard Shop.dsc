@@ -604,7 +604,7 @@ reload_guards_command:
         - narrate "Guards reloaded!" format:guard_shop_command_finished_format
 
 # Task to reload the Guards. Mainly for administrtors/operators. Reload the guards when you edit any of these config values in the `guard_shop_config` container:
-#   skin (texture and/or signature)
+#   skin (texture, signature, and/or uuid)
 #   respawn_delay
 #   attack_rate
 #   realistic
