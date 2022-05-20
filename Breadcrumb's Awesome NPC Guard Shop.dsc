@@ -68,7 +68,7 @@ guard_shop_config:
         # How much health the guard has.
         health: 35
         # What item to put in guard's main hand.
-        main_hand: iron_sword
+        main_hand: stone_sword
         # Guard's name
         name: &6Guard
         # Shows up in chat before text.
