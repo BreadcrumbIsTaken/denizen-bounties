@@ -169,7 +169,7 @@ player_buys_a_guard:
                     - flag <player> guard_ownership_amount:++
 
                     - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> "name:<proc[gs_data].context[guard.name]> <[guard_number]>"
+                    - adjust <[guard]> "name:<proc[gs_data].context[guard.name]> <[guard_number]><reset>"
                     - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
                     - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
                     - adjust <[guard]> owner:<player>
@@ -226,42 +226,36 @@ guard_interact_script:
                     # Deletes guard.
                     # / CONFIG: Set the command to delete the guard. Is case insensitive.
                     trigger: /remove/
-                    hide trigger message: true
                     script:
                        - run remove_guard def.guard:<npc>
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
                     trigger: /stay/
-                    hide trigger message: true
                     script:
                         - run stop_following def.guard:<npc>
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
                     trigger: /follow/
-                    hide trigger message: true
                     script:
                         - run start_following def.guard:<npc>
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
                     trigger: /passive/
-                    hide trigger message: true
                     script:
                         - run become_passive def.guard:<npc>
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
                     trigger: /aggressive/
-                    hide trigger message: true
                     script:
                         - run become_aggressive def.guard:<npc>
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
                     trigger: /despawn/
-                    hide trigger message: true
                     script:
                         - run despawn_guard def.guard:<npc>
 
