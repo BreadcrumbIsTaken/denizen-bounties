@@ -655,8 +655,7 @@ player_leaves_despawn_guards:
         on player quits flagged:guards:
             # Loops through all the player's guards and despawns them.
             - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
-                - foreach <player.flag[guards]> as:i:
-                    - despawn <[i]>
+                - despawn <player.flag[guards]>
 
 # Respawn Guards when the player leaves if set.
 player_joins_respawn_guards:
@@ -666,8 +665,7 @@ player_joins_respawn_guards:
         on player joins flagged:guards:
             # Loops through all the player's guards and respawns them.
             - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
-                - foreach <player.flag[guards]> as:guard:
-                    - spawn <[guard]> <player.location.add[1,0,1]>
+                - spawn <player.flag[guards]> <player.location.add[1,0,1]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
