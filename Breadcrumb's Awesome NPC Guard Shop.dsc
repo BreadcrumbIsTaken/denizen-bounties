@@ -623,32 +623,29 @@ reload_guards:
     type: task
     debug: false
     script:
-        - foreach <server.offline_players> as:player:
-            - if !<[player].has_flag[guards]>:
-                - foreach next
-            - else:
-                - foreach <[player].flag[guards]> as:guard:
-                    - define data <proc[gs_data].context[guard]>
-                    - define id <[guard].id>
+        - foreach <server.players_flagged[guards]> as:player:
+            - foreach <[player].flag[guards]> as:guard:
+                - define data <proc[gs_data].context[guard]>
+                - define id <[guard].id>
 
-                    # Updates sentinel info
-                    - execute "sentinel respawntime <[data].get[respawn_delay]> --id <[id]>" as_server silent
-                    - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server silent
-                    - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server silent
-                    - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server silent
-                    - execute "sentinel range <[data].get[attack_range]> --id <[guard].id>" as_server silent
-                    - execute "sentinel chaserange <[data].get[chase_range]> --id <[guard].id>" as_server silent
+                # Updates sentinel info
+                - execute "sentinel respawntime <[data].get[respawn_delay]> --id <[id]>" as_server silent
+                - execute "sentinel attackrate <[data].get[attack_rate]> --id <[id]>" as_server silent
+                - execute "sentinel realistic <[data].get[realistic]> --id <[id]>" as_server silent
+                - execute "sentinel guarddistance <[data].get[follow_distance]> --id <[id]>" as_server silent
+                - execute "sentinel range <[data].get[attack_range]> --id <[guard].id>" as_server silent
+                - execute "sentinel chaserange <[data].get[chase_range]> --id <[guard].id>" as_server silent
 
-                    # Updates NPC info
-                    - adjust <[guard]> skin_blob:<[data].get[skin.texture]>;<[data].get[skin.signature]>
+                # Updates NPC info
+                - adjust <[guard]> skin_blob:<[data].get[skin.texture]>;<[data].get[skin.signature]>
 
-                    # Updates the targets, ignores, and avoids.
-                    - foreach <[data].get[attacks]> as:i:
-                        - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
-                    - foreach <[data].get[ignores]> as:i:
-                        - execute "sentinel addignore <[i]> --id <[id]>" as_server silent
-                    - foreach <[data].get[avoids]> as:i:
-                        - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
+                # Updates the targets, ignores, and avoids.
+                - foreach <[data].get[attacks]> as:i:
+                    - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
+                - foreach <[data].get[ignores]> as:i:
+                    - execute "sentinel addignore <[i]> --id <[id]>" as_server silent
+                - foreach <[data].get[avoids]> as:i:
+                    - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
 
 # Despawn Guards when the player leaves if set.
 player_leaves_despawn_guards:
