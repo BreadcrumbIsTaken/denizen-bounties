@@ -8,8 +8,8 @@
 #
 # @author Breadcrumb
 # @date 2022-03-27
-# @denizen-build REL-1769
-# @script-version 3.0
+# @denizen-build REL-1777
+# @script-version 3.1
 # @github BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -143,7 +143,7 @@ player_buys_a_guard:
         on player clicks guard_head_clickable in buy_guard_inventory:
             - inventory close
 
-            - if <player.flag[guard_ownership_amount].if_null[0]> > <proc[gs_data].context[guard.guards_per_player]>:
+            - if <player.flag[guard_ownership_amount].if_null[0]> >= <proc[gs_data].context[guard.guards_per_player]>:
                 # / CONFIG: What the shopkeeper will say when the player has enough guards.
                 - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
             - else:
