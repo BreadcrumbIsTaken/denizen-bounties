@@ -7,7 +7,7 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-03-27
+# @date 2022-10-01
 # @denizen-build REL-1777
 # @script-version 3.1
 # @github BreadcrumbIsTaken/denizen-bounties
