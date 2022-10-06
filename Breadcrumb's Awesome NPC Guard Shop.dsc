@@ -7,9 +7,9 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-10-01
+# @date 2022-10-06
 # @denizen-build REL-1777
-# @script-version 3.1
+# @script-version 3.2
 # @github BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -205,6 +205,13 @@ personal_guard:
         on assignment:
             - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
             - trigger name:chat state:true radius:<proc[gs_data].context[guard.proximity_radius]>
+        on remove:
+            - if !<npc.owner.has_flag[removing_guard]>:
+                - flag <npc.owner> guards:<-:<npc>
+                - flag <npc.owner> guard_ownership_amount:--
+                - flag <npc> statuses:!
+                # / CONFIG: What the Guard will say in chat when the guard has died and is automatically removed if `respawn_delay` is set to -1.
+                - narrate "<npc.name><reset>: I have died! So long friend." targets:<npc.owner>
     interact scripts:
         - guard_interact_script
 
@@ -227,7 +234,9 @@ guard_interact_script:
                     # / CONFIG: Set the command to delete the guard. Is case insensitive.
                     trigger: /remove/
                     script:
-                       - run remove_guard def.guard:<npc>
+                        - flag <player> removing_guard
+                        - ~run remove_guard def.guard:<npc>
+                        - flag <player> removing_guard:!
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
@@ -439,7 +448,9 @@ edit_guard_data_from_inventory:
             - inventory open d:<[inventory]>
         on player clicks remove_item in edit_guard_inventory:
             - inventory close
-            - run remove_guard def.guard:<context.item.flag[guard]>
+            - flag <player> removing_guard
+            - ~run remove_guard def.guard:<context.item.flag[guard]>
+            - flag <player> removing_guard:!
         on player clicks despawn_item in edit_guard_inventory:
             - inventory close
             - if <context.item.flag[guard].flag[statuses].contains[spawned]>:
