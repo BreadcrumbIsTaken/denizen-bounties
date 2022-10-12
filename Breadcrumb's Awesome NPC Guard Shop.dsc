@@ -7,9 +7,9 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-10-06
-# @denizen-build REL-1777
-# @script-version 3.2
+# @date 2022-10-11
+# @denizen-build REL-1778
+# @script-version 3.3
 # @github BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -648,9 +648,17 @@ reload_guards:
                 - execute "sentinel chaserange <[data].get[chase_range]> --id <[guard].id>" as_server silent
 
                 # Updates NPC info
-                - adjust <[guard]> skin_blob:<[data].get[skin.texture]>;<[data].get[skin.signature]>
+                - adjust <[guard]> skin_blob:<[data].get[skin].get[texture]>;<[data].get[skin].get[signature]>
 
-                # Updates the targets, ignores, and avoids.
+                # Reset original targets, ignores, and avoids.
+                - foreach <[guard].sentinel.targets> as:i:
+                    - execute "sentinel removetarget <[i]> --id <[id]>" as_server silent
+                - foreach <[guard].sentinel.ignores> as:i:
+                    - execute "sentinel removeignore <[i]> --id <[id]>" as_server silent
+                - foreach <[guard].sentinel.avoids> as:i:
+                    - execute "sentinel removeavoid <[i]> --id <[id]>" as_server silent
+
+                # Add the new targets, ignores, and avoids.
                 - foreach <[data].get[attacks]> as:i:
                     - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
                 - foreach <[data].get[ignores]> as:i:
