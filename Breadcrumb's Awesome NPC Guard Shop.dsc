@@ -167,7 +167,7 @@ guard_shop_shopkeeper:
     debug: false
     actions:
         on assignment:
-            - trigger name:proximity state:true radius:<proc[gs_data].context[shopkeeper.proximity_radius]>
+            - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]>
     interact scripts:
         - guard_shop_shopkeeper_interact_script
 
@@ -180,7 +180,7 @@ guard_shop_shopkeeper_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:<proc[gs_data].context[shopkeeper.proximity_radius]> realistic
+                        - lookclose true range:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]> realistic
                         - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.welcome]> format:guard_shop_shopkeeper_chat_format
                         - wait 1s
                         - inventory open d:buy_guard_inventory
@@ -197,10 +197,10 @@ player_buys_a_guard:
         on player clicks guard_head_clickable in buy_guard_inventory:
             - inventory close
 
-            - if <player.flag[guard_ownership_amount].if_null[0]> >= <proc[gs_data].context[guard.guards_per_player]>:
+            - if <player.flag[guard_ownership_amount].if_null[0]> >= <script[guard_shop_config].parsed_key[guard.guards_per_player]>:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.enough_guards]> format:guard_shop_shopkeeper_chat_format
             - else:
-                - define price <proc[gs_data].context[guard.price]>
+                - define price <script[guard_shop_config].parsed_key[guard.price]>
                 - if <player.money> < <[price]>:
                     - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                 - else:
@@ -220,27 +220,27 @@ player_buys_a_guard:
                     - flag <player> guard_ownership_amount:++
 
                     - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> "name:<&[guard_name]><proc[gs_data].context[guard.name]> <[guard_number]><reset>"
-                    - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
-                    - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
+                    - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <[guard_number]><reset>"
+                    - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>
+                    - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
                     - adjust <[guard]> owner:<player>
 
                     # Sentinel things.
                     - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
-                    - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
-                    - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
-                    - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
-                    - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
-                    - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
-                    - execute "sentinel range <proc[gs_data].context[guard.attack_range]> --id <[guard].id>" as_server silent
-                    - execute "sentinel chaserange <proc[gs_data].context[guard.chase_range]> --id <[guard].id>" as_server silent
+                    - execute "sentinel respawntime <script[guard_shop_config].parsed_key[guard.respawn_delay]> --id <[guard].id>" as_server silent
+                    - execute "sentinel attackrate <script[guard_shop_config].parsed_key[guard.attack_rate]> --id <[guard].id>" as_server silent
+                    - execute "sentinel realistic <script[guard_shop_config].parsed_key[guard.realistic]> --id <[guard].id>" as_server silent
+                    - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
+                    - execute "sentinel health <script[guard_shop_config].parsed_key[guard.health]> --id <[guard].id>" as_server silent
+                    - execute "sentinel range <script[guard_shop_config].parsed_key[guard.attack_range]> --id <[guard].id>" as_server silent
+                    - execute "sentinel chaserange <script[guard_shop_config].parsed_key[guard.chase_range]> --id <[guard].id>" as_server silent
 
                     # Adds targets, ignores, and avoids.
-                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
+                    - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
                         - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
+                    - foreach <script[guard_shop_config].parsed_key[guard.ignores]> as:i:
                         - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
+                    - foreach <script[guard_shop_config].parsed_key[guard.avoids]> as:i:
                         - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
 
                     - wait 1s
@@ -252,8 +252,8 @@ personal_guard:
     debug: false
     actions:
         on assignment:
-            - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
-            - trigger name:chat state:true radius:<proc[gs_data].context[guard.proximity_radius]>
+            - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[guard.proximity_radius]>
+            - trigger name:chat state:true radius:<script[guard_shop_config].parsed_key[guard.proximity_radius]>
         on remove:
             - if !<npc.owner.has_flag[removing_guard]>:
                 - flag <npc.owner> guards:<-:<npc>
@@ -272,7 +272,7 @@ guard_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:<proc[gs_data].context[guard.proximity_radius]> realistic
+                        - lookclose true range:<script[guard_shop_config].parsed_key[guard.proximity_radius]> realistic
                 exit:
                     script:
                         - lookclose false
@@ -345,7 +345,7 @@ start_following:
     debug: false
     script:
         - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
-        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <npc.id>" as_server silent
+        - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <npc.id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
         - if <npc.flag[statuses]> !contains following:
             - if <npc.flag[statuses]> contains staying:
@@ -357,7 +357,7 @@ become_passive:
     type: task
     debug: false
     script:
-        - foreach <proc[gs_data].context[guard.attacks]> as:i:
+        - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
         - if <npc.flag[statuses]> !contains passive:
@@ -370,7 +370,7 @@ become_aggressive:
     type: task
     debug: false
     script:
-        - foreach <proc[gs_data].context[guard.attacks]> as:i:
+        - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
         - if <npc.flag[statuses]> !contains aggressive:
@@ -592,9 +592,9 @@ guard_head_clickable:
     material: player_head
     display name: Purchase a Guard!
     lore:
-        - <white>Price:<green> $<proc[gs_data].context[guard.price]>
+        - <white>Price:<green> $<script[guard_shop_config].parsed_key[guard.price]>
     mechanisms:
-        skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
+        skull_skin: <script[guard_shop_config].parsed_key[guard.skin.uuid]>|<script[guard_shop_config].parsed_key[guard.skin.texture]>
 
 guard_list_tip:
     type: item
@@ -663,7 +663,7 @@ reload_guards:
     type: task
     debug: false
     script:
-        - define data <proc[gs_data].context[guard]>
+        - define data <script[guard_shop_config].parsed_key[guard]>
         - foreach <server.players_flagged[guards]> as:player:
             - foreach <[player].flag[guards]> as:guard:
                 - define id <[guard].id>
@@ -702,7 +702,7 @@ player_leaves_despawn_guards:
     events:
         on player quits flagged:guards:
             # Loops through all the player's guards and despawns them.
-            - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
+            - if <script[guard_shop_config].parsed_key[guard.despawn_on_owner_leave]>:
                 - despawn <player.flag[guards]>
 
 # Respawn Guards when the player leaves if set.
@@ -712,14 +712,14 @@ player_joins_respawn_guards:
     events:
         on player joins flagged:guards:
             # Loops through all the player's guards and respawns them.
-            - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
+            - if <script[guard_shop_config].parsed_key[guard.respawn_on_owner_join]>:
                 - spawn <player.flag[guards]> <player.location.add[1,0,1]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
     type: format
     debug: false
-    format: <&[shopkeeper_name]><proc[gs_data].context[shopkeeper.chat_name]><reset>: <[text]>
+    format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <[text]>
 
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
@@ -732,14 +732,6 @@ guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><&[reload_success]>Done!<reset><&rb><&co> <[text]>
-
-# This is a procedure to get any passed in config values from the `guard_shop_config` data script container and return them unespaced and parsed.
-gs_data:
-    type: procedure
-    definitions: data_key
-    debug: false
-    script:
-        - determine <script[guard_shop_config].data_key[<[data_key]>].unescaped>
 
 # Chat format for Guards.
 guard_shop_guard_chat_format:
