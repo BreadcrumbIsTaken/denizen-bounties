@@ -168,6 +168,7 @@ guard_shop_shopkeeper:
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]>
+            - lookclose true range:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]> realistic
     interact scripts:
         - guard_shop_shopkeeper_interact_script
 
@@ -180,13 +181,11 @@ guard_shop_shopkeeper_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]> realistic
                         - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.welcome]> format:guard_shop_shopkeeper_chat_format
                         - wait 1s
                         - inventory open d:buy_guard_inventory
                 exit:
                     script:
-                        - lookclose false
                         - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.goodbye]> format:guard_shop_shopkeeper_chat_format
 
 # The event that fires when the player purchases a guard.
