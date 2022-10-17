@@ -201,52 +201,54 @@ player_buys_a_guard:
 
             - if <player.flag[guard_ownership_amount].if_null[0]> >= <script[guard_shop_config].parsed_key[guard.guards_per_player]>:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.enough_guards]> format:guard_shop_shopkeeper_chat_format
-            - else:
-                - define price <script[guard_shop_config].parsed_key[guard.price]>
-                - if <player.money> < <[price]>:
-                    - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
-                - else:
-                    - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
-                    - money take quantity:<[price]>
+                - stop
 
-                    # Spawns in the guard.
-                    - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
+            - define price <script[guard_shop_config].parsed_key[guard.price]>
+            - if <player.money> < <[price]>:
+                - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
+                - stop
 
-                    - define guard <entry[guard].created_npc>
+            - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
+            - money take quantity:<[price]>
 
-                    - flag <player> guards:->:<[guard]>
-                    # Default statuses.
-                    - flag <[guard]> statuses:<list[following|aggressive|spawned]>
+            # Spawns in the guard.
+            - create player Guard <player.location.find_spawnable_blocks_within[10].get[10]> traits:sentinel save:guard
 
-                    - define guard_number <player.flag[guard_ownership_amount].if_null[0].add[1]>
-                    - flag <player> guard_ownership_amount:++
+            - define guard <entry[guard].created_npc>
 
-                    - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <[guard_number]><reset>"
-                    - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>
-                    - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
-                    - adjust <[guard]> owner:<player>
+            - flag <player> guards:->:<[guard]>
+            # Default statuses.
+            - flag <[guard]> statuses:<list[following|aggressive|spawned]>
 
-                    # Sentinel things.
-                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
-                    - execute "sentinel respawntime <script[guard_shop_config].parsed_key[guard.respawn_delay]> --id <[guard].id>" as_server silent
-                    - execute "sentinel attackrate <script[guard_shop_config].parsed_key[guard.attack_rate]> --id <[guard].id>" as_server silent
-                    - execute "sentinel realistic <script[guard_shop_config].parsed_key[guard.realistic]> --id <[guard].id>" as_server silent
-                    - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
-                    - execute "sentinel health <script[guard_shop_config].parsed_key[guard.health]> --id <[guard].id>" as_server silent
-                    - execute "sentinel range <script[guard_shop_config].parsed_key[guard.attack_range]> --id <[guard].id>" as_server silent
-                    - execute "sentinel chaserange <script[guard_shop_config].parsed_key[guard.chase_range]> --id <[guard].id>" as_server silent
+            - define guard_number <player.flag[guard_ownership_amount].if_null[0].add[1]>
+            - flag <player> guard_ownership_amount:++
 
-                    # Adds targets, ignores, and avoids.
-                    - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
-                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-                    - foreach <script[guard_shop_config].parsed_key[guard.ignores]> as:i:
-                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
-                    - foreach <script[guard_shop_config].parsed_key[guard.avoids]> as:i:
-                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+            - assignment set script:personal_guard npc:<[guard]>
+            - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <[guard_number]><reset>"
+            - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>
+            - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
+            - adjust <[guard]> owner:<player>
 
-                    - wait 1s
-                    - narrate <script[guard_list_config].parsed_key[dialogue.shopkeeper.purchases_a_guard]> format:guard_shop_shopkeeper_chat_format
+            # Sentinel things.
+            - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+            - execute "sentinel respawntime <script[guard_shop_config].parsed_key[guard.respawn_delay]> --id <[guard].id>" as_server silent
+            - execute "sentinel attackrate <script[guard_shop_config].parsed_key[guard.attack_rate]> --id <[guard].id>" as_server silent
+            - execute "sentinel realistic <script[guard_shop_config].parsed_key[guard.realistic]> --id <[guard].id>" as_server silent
+            - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
+            - execute "sentinel health <script[guard_shop_config].parsed_key[guard.health]> --id <[guard].id>" as_server silent
+            - execute "sentinel range <script[guard_shop_config].parsed_key[guard.attack_range]> --id <[guard].id>" as_server silent
+            - execute "sentinel chaserange <script[guard_shop_config].parsed_key[guard.chase_range]> --id <[guard].id>" as_server silent
+
+            # Adds targets, ignores, and avoids.
+            - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+                - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+            - foreach <script[guard_shop_config].parsed_key[guard.ignores]> as:i:
+                - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
+            - foreach <script[guard_shop_config].parsed_key[guard.avoids]> as:i:
+                - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+
+            - wait 1s
+            - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.purchases_a_guard]> format:guard_shop_shopkeeper_chat_format
 
 # Guard assignment script.
 personal_guard:
