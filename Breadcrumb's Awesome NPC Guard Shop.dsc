@@ -27,6 +27,7 @@
 # How to use:
 #   Configure all the config values below in "guard_shop_config".
 #   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/ex assignment add script:guard_shop_shopkeeper)
+#   To open the shop inventory, the player must right click the Shopkeeper NPC.
 #   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
 # Colors:
@@ -168,6 +169,7 @@ guard_shop_shopkeeper:
     actions:
         on assignment:
             - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]>
+            - trigger name:click state:true
             - lookclose true range:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]> realistic
     interact scripts:
         - guard_shop_shopkeeper_interact_script
@@ -182,11 +184,12 @@ guard_shop_shopkeeper_interact_script:
                 entry:
                     script:
                         - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.welcome]> format:guard_shop_shopkeeper_chat_format
-                        - wait 1s
-                        - inventory open d:buy_guard_inventory
                 exit:
                     script:
                         - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.goodbye]> format:guard_shop_shopkeeper_chat_format
+            click trigger:
+                script:
+                    - inventory open d:buy_guard_inventory
 
 # The event that fires when the player purchases a guard.
 player_buys_a_guard:
