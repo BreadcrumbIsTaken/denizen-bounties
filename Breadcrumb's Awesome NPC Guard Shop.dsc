@@ -292,125 +292,132 @@ guard_interact_script:
                     trigger: /remove/
                     script:
                         - flag <player> removing_guard
-                        - ~run remove_guard
+                        - ~run remove_guard def.guard:<npc>
                         - flag <player> removing_guard:!
                 2:
                     # Stop following.
                     # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
                     trigger: /stay/
                     script:
-                        - run stop_following
+                        - run stop_following def.guard:<npc>
                 3:
                     # Start following.
                     # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
                     trigger: /follow/
                     script:
-                        - run start_following
+                        - run start_following def.guard:<npc>
                 4:
                     # Don't attack.
                     # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
                     trigger: /passive/
                     script:
-                        - run become_passive
+                        - run become_passive def.guard:<npc>
                 5:
                     # Do attack.
                     # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
                     trigger: /aggressive/
                     script:
-                        - run become_aggressive
+                        - run become_aggressive def.guard:<npc>
                 6:
                     # Despawn.
                     # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
                     trigger: /despawn/
                     script:
-                        - run despawn_guard
+                        - run despawn_guard def.guard:<npc>
 
 # Task to remove a Guard.
 remove_guard:
     type: task
+    definitions: guard
     debug: false
     script:
-        - flag <player> guards:<-:<npc>
+        - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
-        - flag <npc> statuses:!
+        - flag <[guard]> statuses:!
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format
-        - remove <npc>
+        - remove <[guard]>
 
 # Task to stop a Guard from following you.
 stop_following:
     type: task
+    definitions: guard
     debug: false
     script:
-        - execute "sentinel guard --id <npc.id>" as_server silent
+        - execute "sentinel guard --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains staying:
-            - if <npc.flag[statuses]> contains following:
-                - flag <npc> statuses:<-:following
-            - flag <npc> statuses:->:staying
+        - if <[guard].flag[statuses]> !contains staying:
+            - if <[guard].flag[statuses]> contains following:
+                - flag <[guard]> statuses:<-:following
+            - flag <[guard]> statuses:->:staying
 
 # Task to make the Guard follow you.
 start_following:
     type: task
+    definitions: guard
     debug: false
     script:
-        - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
-        - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <npc.id>" as_server silent
+        - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+        - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains following:
-            - if <npc.flag[statuses]> contains staying:
-                - flag <npc> statuses:<-:staying
-            - flag <npc> statuses:->:following
+        - if <[guard].flag[statuses]> !contains following:
+            - if <[guard].flag[statuses]> contains staying:
+                - flag <[guard]> statuses:<-:staying
+            - flag <[guard]> statuses:->:following
 
 # Task to make the Guard passive.
 become_passive:
     type: task
+    definitions: guard
     debug: false
     script:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
-            - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
+            - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains passive:
-            - if <npc.flag[statuses]> contains aggressive:
-                - flag <npc> statuses:<-:aggressive
-            - flag <npc> statuses:->:passive
+        - if <[guard].flag[statuses]> !contains passive:
+            - if <[guard].flag[statuses]> contains aggressive:
+                - flag <[guard]> statuses:<-:aggressive
+            - flag <[guard]> statuses:->:passive
 
 # Task to make the Guard aggressive.
 become_aggressive:
     type: task
+    definitions: guard
     debug: false
     script:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
-            - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
+            - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains aggressive:
-            - if <npc.flag[statuses]> contains passive:
-                - flag <npc> statuses:<-:passive
-            - flag <npc> statuses:->:aggressive
+        - if <[guard].flag[statuses]> !contains aggressive:
+            - if <[guard].flag[statuses]> contains passive:
+                - flag <[guard]> statuses:<-:passive
+            - flag <[guard]> statuses:->:aggressive
 
 # Task to despawn the Guard.
 despawn_guard:
     type: task
+    definitions: guard
     debug: false
     script:
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains despawned:
-            - if <npc.flag[statuses]> contains spawned:
-                - flag <npc> statuses:<-:spawned
-            - flag <npc> statuses:->:despawned
-            - despawn <npc>
+        - if <[guard].flag[statuses]> !contains despawned:
+            - if <[guard].flag[statuses]> contains spawned:
+                - flag <[guard]> statuses:<-:spawned
+            - flag <[guard]> statuses:->:despawned
+            - despawn <[guard]>
 
 # Task to spawn the Guard.
 spawn_guard:
     type: task
+    definitions: guard
     debug: false
     script:
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
-        - if <npc.flag[statuses]> !contains spawned:
-            - if <npc.flag[statuses]> contains despawned:
-                - flag <npc> statuses:<-:despawned
-            - flag <npc> statuses:->:spawned
-            - flag <player> despawned_guards:<-:<npc>
-            - spawn <npc> <player.location.add[1,0,1]>
+        - if <[guard].flag[statuses]> !contains spawned:
+            - if <[guard].flag[statuses]> contains despawned:
+                - flag <[guard]> statuses:<-:despawned
+            - flag <[guard]> statuses:->:spawned
+            - flag <player> despawned_guards:<-:<[guard]>
+            - spawn <[guard]> <player.location.add[1,0,1]>
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
