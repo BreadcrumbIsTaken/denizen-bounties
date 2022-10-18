@@ -77,7 +77,7 @@ guard_shop_config:
             texture: ewogICJ0aW1lc3RhbXAiIDogMTY0MjkwMzc3Njg1NiwKICAicHJvZmlsZUlkIiA6ICJkMGI4MjE1OThmMTE0NzI1ODBmNmNiZTliOGUxYmU3MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJqYmFydHl5IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM5NDBlOTgyZGZiODg4NWE1NzQwODVmMDcwYjk5ZWM1ZjE0NzQ4YzE4Y2Q1M2Q2NzNmMzc3ZmUyNzRkZjFhNTkiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==
             # Signature value for skin.
             signature: pG/azz1n93QEIYMOUTsYZsTNnMohP+eiG1tcJh+pKgfv12gFcoiRyzESCj1BaCpAShZAf8A0lseTf+qvfUcuwarWaVUHGqbxNQrQQIrY7YzuTD2AhbrnsGEs9YYQnBhlNTajeQe70nqv5rfKa8RaFsSPb+s+XzItrMXWMRh6mlM+iTxIdqpIavlq4vMFwqUa1ItVncj8Kf4+fsdzvyCEJXC94LZN+yCL9p3ahp3zKNo01jkBkNCxxlKOSW+z4o/fp+i+rHsUwMUZS6vw6em8dgp1hBlUJru+G7ohntxNThyrRqHof9Qag/GFvCcPYF8ib5nGu6uunKLovODfXz1VFsSXFOyGIFPnmXUE8MKJ5qDOUZ9RAkGIFYWeO5NXWnBbXhjaPkRI0qG3QUdkuiPgG6Bcd1cj20qk1q2LuRDxeXR69cfkKR/JHF4AxPzG13DWOxHZSe9bwtmZ/VLtCbrIozA09vnAryPAyTI3pxVLrap8ODL9yN+5TIFOmOo8lTiYdnPWVFET11g/4zK7r3XIhiAEdgdYLAhI2sXuzPkwxaitIDJhs9WJ3MMi87bzABI5EqiJEKVvpEFjpR0ok3pq6GQemmzpsCtvfRZhZi5OO1VkGiC9XU/xY5M4Yoxqi59e1bThuJxGdj867zpr1X22b3JnC5h+ZG3lf380LOVvCS4=
-            # UUID used for "guard_head_clickable".
+            # UUID value for skin.
             uuid: 864f1f7f-5995-466e-b70f-41871f98683e
         # How many guards a player can own at one time.
         guards_per_player: 2
@@ -155,12 +155,14 @@ guard_shop_config:
             becomes_aggressive: I will attack enemies from now on!
             # What the guard will say in chat when they are told to desapwn.
             despawned_on_command: See you later!
-            # What the Guard should say when they are spawned back in.
+            # What the Guard should say in chat when they are spawned back in.
             spawned_on_command: Hello! I'm back!
-            # What the Guard should say when it is already spawned and tried to be spawned again.
+            # What the Guard should say in chat when it is already spawned and tried to be spawned again.
             already_spawned: I am already spawned!
-            # What the Guard should say when it is already despawned and tried to be despawned again.
+            # What the Guard should say in chat when it is already despawned and tried to be despawned again.
             already_despawned: I am already despawned!
+            # What the Guard should say in chat when the guard has died and is automatically removed if `respawn_delay` is set to -1 and the owner is offline. Will be sent when the owner rejoins.
+            died_while_away: I have died while you were away! So long friend.
 
 # Assign this assignment to any NPC to turn it into a shopkeeper for a Guard shop.
 guard_shop_shopkeeper:
@@ -208,11 +210,12 @@ player_buys_a_guard:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
                 - stop
 
-            - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
+            - if !<player.has_flag[despawned_guards]>:
+                - flag <player> despawned_guards:<list[]>
             - money take quantity:<[price]>
 
-            # Spawns in the guard.
-            - create player Guard <player.location.find_spawnable_blocks_within[10].get[10]> traits:sentinel save:guard
+            # Spawns in the guard with a small offset from the player.
+            - create player Guard <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]> traits:sentinel save:guard
 
             - define guard <entry[guard].created_npc>
 
@@ -220,12 +223,11 @@ player_buys_a_guard:
             # Default statuses.
             - flag <[guard]> statuses:<list[following|aggressive|spawned]>
 
-            - define guard_number <player.flag[guard_ownership_amount].if_null[0].add[1]>
             - flag <player> guard_ownership_amount:++
 
             - assignment set script:personal_guard npc:<[guard]>
-            - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <[guard_number]><reset>"
-            - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>
+            - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <player.flag[guard_ownership_amount]><reset>"
+            - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>;<script[guard_shop_config].parsed_key[guard.skin.uuid]>
             - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
             - adjust <[guard]> owner:<player>
 
@@ -263,7 +265,10 @@ personal_guard:
                 - flag <npc.owner> guards:<-:<npc>
                 - flag <npc.owner> guard_ownership_amount:--
                 - flag <npc> statuses:!
-                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_death]> format:guard_shop_guard_chat_format targets:<npc.owner>
+                - if <npc.owner.is_online>:
+                    - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_death]> format:guard_shop_guard_chat_format targets:<npc.owner>
+                - else:
+                    - flag <npc.owner> guards_died_while_away:->:<npc>
     interact scripts:
         - guard_interact_script
 
@@ -510,6 +515,15 @@ edit_guard_data_from_inventory:
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
 
+# Notifies the player that their guards have died while they were away.
+guard_died_while_away:
+    type: world
+    events:
+        on player joins flagged:guards_died_while_away:
+            - foreach <player.flag[guards_died_while_away]> as:guard:
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.died_while_away]> format:guard_shop_guard_format
+                - flag <player> guards_died_while_away:<-:<[guard]>
+
 # Remove Guard item for "edit_guard_inventory".
 remove_item:
     type: item
@@ -681,7 +695,7 @@ reload_guards:
                 - execute "sentinel chaserange <[data.chase_range]> --id <[guard].id>" as_server silent
 
                 # Updates NPC info
-                - adjust <[guard]> skin_blob:<[data.skin.texture]>;<[data.skin.signature]>
+                - adjust <[guard]> skin_blob:<[data.skin.texture]>;<[data.skin.signature]>;<[data.skin.uuid]>
 
                 # Reset original targets, ignores, and avoids.
                 - foreach <[guard].sentinel.targets> as:i:
@@ -725,6 +739,12 @@ guard_shop_shopkeeper_chat_format:
     debug: false
     format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <[text]>
 
+# Chat format for Guards.
+guard_shop_guard_chat_format:
+    type: format
+    debug: false
+    format: <npc.name><reset>: <[text]>
+
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
     type: format
@@ -736,9 +756,3 @@ guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><&[reload_success]>Done!<reset><&rb><&co> <[text]>
-
-# Chat format for Guards.
-guard_shop_guard_chat_format:
-    type: format
-    debug: false
-    format: <npc.name><reset>: <[text]>
