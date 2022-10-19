@@ -42,7 +42,7 @@
 #       guard_status -- The color that indicates the status of the Guard. Shows up in item lores.
 #       reload_success -- The color that indicates the Guards have successfully reloaded. Shows up in chat.
 #   Here are some defaults that you can copy/paste into your config.yml file:
-#       guard_shop: <dark_cyan>
+#       guard_shop: <dark_aqua>
 #       guard_name: <gold>
 #       guardlist_command: <yellow>
 #       shopkeeper_name: <red>
