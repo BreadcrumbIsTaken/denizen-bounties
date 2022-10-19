@@ -763,3 +763,19 @@ guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><&[reload_success]>Done!<reset><&rb><&co> <[text]>
+
+# If the server does not have any of the default colors set, then set them.
+guard_shop_adjust_custom_colors:
+    type: world
+    events:
+        on scripts loaded:
+            - definemap defaults:
+                guard_shop: <dark_aqua>
+                guard_name: <gold>
+                guardlist_command: <yellow>
+                shopkeeper_name: <red>
+                toggleable_items: <red>
+                use_guard_tip: <green>
+                guard_status: <blue>
+                reload_success: <green>
+            - adjust server default_colors:<[defaults]>
