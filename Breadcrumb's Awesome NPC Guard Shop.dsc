@@ -33,12 +33,12 @@
 # Colors:
 #   You can customize colors for chat, nametags, etc. by adding config values into your Denizen config.yml file.
 #   Here is a list of config values that you can set:
-#       guard_shop -- Emphesises the words "Guard Shop". Shows up in chat said by the Shopkeeper and in it's GUI.
+#       guard_shop -- Colors the words "Guard Shop". Shows up in chat said by the Shopkeeper and in its GUI.
 #       guard_name -- The color that changes the Guard's name. Shows up in nametag and in chat.
 #       guardlist_command -- Colors the command in chat. Said by default by the shopkeeper.
 #       shopkeeper_name -- The color that changes the Shopkeeper's name. Shows up in nametag and in chat.
 #       toggleable_items -- The color of the display name of items that let you edit the Guards. Shows up in an inventory.
-#       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the guard.
+#       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the Guard.
 #       guard_status -- The color that indicates the status of the Guard. Shows up in item lores.
 #       reload_success -- The color that indicates the Guards have successfully reloaded. Shows up in chat.
 #   Here are some defaults that you can copy/paste into your config.yml file:
@@ -52,13 +52,13 @@
 #       reload_success: <green>
 #
 # Guard commands:
-#   When in the proximity range specified in the "guard_shop_config" container, you can give the guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard..
+#   When in the proximity range specified in the "guard_shop_config" container, you can give the Guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard.
 #   The commands are "stay", "follow", "passive", "aggressive", and "remove".
-#   The "stay" command will make the guards not follow the owner when the owner moves outside of the guard's proximity range.
-#   The "follow" command will make the guards follow the owner again.
-#   The "passive" command will make the guard not harm any entity.
-#   The "aggressive" command will make the guard attack entities.
-#   The "remove" command will remove the guard compleatly.
+#   The "stay" command will make the Guards not follow the owner when the owner moves outside of the Guard's proximity range.
+#   The "follow" command will make the Guards follow the owner again.
+#   The "passive" command will make the Guard not harm any entity.
+#   The "aggressive" command will make the Guard attack entities.
+#   The "remove" command will remove the Guard compleatly.
 
 guard_shop_config:
     type: data
@@ -68,7 +68,7 @@ guard_shop_config:
         # Proximity radius.
         proximity_radius: 5
     guard:
-        # Price per guard. This assumes you already have an ecomomy system setup using Vault. If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
+        # Price per Guard. This assumes you already have an ecomomy system setup using Vault. If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
         price: 150
         # Changes the Guard's skin. Needs the texture and signature for the skin. See this site for more information about skin blobs: https://meta.denizenscript.com/Docs/Languages/#player%20entity%20skins%20(skin%20blobs)
         # All of these values can be found on https://mineskin.org
@@ -79,25 +79,25 @@ guard_shop_config:
             signature: pG/azz1n93QEIYMOUTsYZsTNnMohP+eiG1tcJh+pKgfv12gFcoiRyzESCj1BaCpAShZAf8A0lseTf+qvfUcuwarWaVUHGqbxNQrQQIrY7YzuTD2AhbrnsGEs9YYQnBhlNTajeQe70nqv5rfKa8RaFsSPb+s+XzItrMXWMRh6mlM+iTxIdqpIavlq4vMFwqUa1ItVncj8Kf4+fsdzvyCEJXC94LZN+yCL9p3ahp3zKNo01jkBkNCxxlKOSW+z4o/fp+i+rHsUwMUZS6vw6em8dgp1hBlUJru+G7ohntxNThyrRqHof9Qag/GFvCcPYF8ib5nGu6uunKLovODfXz1VFsSXFOyGIFPnmXUE8MKJ5qDOUZ9RAkGIFYWeO5NXWnBbXhjaPkRI0qG3QUdkuiPgG6Bcd1cj20qk1q2LuRDxeXR69cfkKR/JHF4AxPzG13DWOxHZSe9bwtmZ/VLtCbrIozA09vnAryPAyTI3pxVLrap8ODL9yN+5TIFOmOo8lTiYdnPWVFET11g/4zK7r3XIhiAEdgdYLAhI2sXuzPkwxaitIDJhs9WJ3MMi87bzABI5EqiJEKVvpEFjpR0ok3pq6GQemmzpsCtvfRZhZi5OO1VkGiC9XU/xY5M4Yoxqi59e1bThuJxGdj867zpr1X22b3JnC5h+ZG3lf380LOVvCS4=
             # UUID value for skin.
             uuid: 864f1f7f-5995-466e-b70f-41871f98683e
-        # How many guards a player can own at one time.
+        # How many Guards a player can own at one time.
         guards_per_player: 2
         # Proximity radius for player giving commands.
         proximity_radius: 10
-        # How close to follow player.
-        follow_lead: 4
         # How fast to follow player.
         follow_speed: 1
-        # How much health the guard has.
+        # How far the player needs to go before the Guard starts following the player.
+        follow_distance: 5
+        # How much health the Guard has.
         health: 35
-        # What item to put in guard's main hand.
+        # What item to put in Guard's main hand.
         main_hand: stone_sword
         # Guard's name
         name: Guard
         # Shows up in chat before text.
         chat_name: Guard
-        # How long until guard respawns in seconds.
+        # How long until Guard respawns in seconds.
         # 0 will disable automatic respawn.
-        # -1 will delete the guard when killed.
+        # -1 will delete the Guard when killed.
         respawn_delay: 5
         attacks:
             # What to attack.
@@ -114,14 +114,12 @@ guard_shop_config:
             - creepers
         # Rate of attack in seconds.
         attack_rate: 2
-        # If true, guard will not notice entities behind it.
+        # If true, Guard will not notice entities behind it.
         # If false, it will notice entities behind it.
         realistic: false
-        # How far the player needs to go before guard starts following the player.
-        follow_distance: 5
-        # Despawns the guards when the player leaves.
+        # Despawns the Guards when the player leaves.
         despawn_on_owner_leave: true
-        # Respawns the guards when the player joins.
+        # Respawns the Guards when the player joins.
         respawn_on_owner_join: true
         # The maximum attack range of the Guard.
         attack_range: 3
@@ -129,17 +127,17 @@ guard_shop_config:
         chase_range: 30
         # Commands that are said in chat when the owner is within the Guard's proximity radius.
         commands:
-            # Set the command to delete the guard. Is case insensitive.
+            # Set the command to delete the Guard. Is case insensitive.
             remove_guard: remove
-            # Set the command to tell the guard to stop following the player. Is case insensitive.
+            # Set the command to tell the Guard to stop following the player. Is case insensitive.
             stop_following: stay
-            # Set the command to tell the guard to continue following the player. Is case insensitive.
+            # Set the command to tell the Guard to continue following the player. Is case insensitive.
             start_following: follow
-            # Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
+            # Set the command to tell the Guard TO NOT attack enemies. Is case insensitive.
             become_passive: passive
-            # Set the command to tell the guard TO attack enemies. Is case insensitive.
+            # Set the command to tell the Guard TO attack enemies. Is case insensitive.
             become_aggressive: aggressive
-            # Set the command to tell the guard to despawn. Is case insensitive.
+            # Set the command to tell the Guard to despawn. Is case insensitive.
             despawn_guard: despawn
     dialogue:
         # Dialoge for the shopkeeper. Is said in the chat. Formatting is automatically applied to include the Shopkeeper's name in chat.
@@ -148,14 +146,14 @@ guard_shop_config:
             welcome: Welcome to the <&[guard_shop]>Guard Shop!
             # What the shopkeeper should say when the player leaves the proximity.
             goodbye: Goodbye!
-            # What the shopkeeper will say when the player has enough guards.
+            # What the shopkeeper will say when the player has enough Guards.
             enough_guards: Sorry, but you already have enough Guards for now.
             # What the shopkeeper will say when the player does not have enough money.
-            not_enough_money: Sorry, but it appears that you don't have enough money to buy a guard.
+            not_enough_money: Sorry, but it appears that you don't have enough money to buy a Guard.
             # What the shopkeeper will say when the player purchases a Guard.
             purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <&[guardlist_command]>/guardlist
         guard:
-            # What the Guard will say in chat when the guard has died and is automatically removed if `respawn_delay` is set to -1.
+            # What the Guard will say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1.
             removed_on_death: I have died! So long friend.
             # What the Guard will say in chat when they are removed.
             removed_on_command: Removed!
@@ -167,7 +165,7 @@ guard_shop_config:
             becomes_passive: I will not attack enemies from now on.
             # What the Guard will say in chat when they are told to be aggressive.
             becomes_aggressive: I will attack enemies from now on!
-            # What the guard will say in chat when they are told to desapwn.
+            # What the Guard will say in chat when they are told to desapwn.
             despawned_on_command: See you later!
             # What the Guard should say in chat when they are spawned back in.
             spawned_on_command: Hello! I'm back!
@@ -175,7 +173,7 @@ guard_shop_config:
             already_spawned: I am already spawned!
             # What the Guard should say in chat when it is already despawned and tried to be despawned again.
             already_despawned: I am already despawned!
-            # What the Guard should say in chat when the guard has died and is automatically removed if `respawn_delay` is set to -1 and the owner is offline. Will be sent when the owner rejoins.
+            # What the Guard should say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1 and the owner is offline. Will be sent when the owner rejoins.
             died_while_away: I have died while you were away! So long friend.
 
 # Assign this assignment to any NPC to turn it into a shopkeeper for a Guard shop.
@@ -207,7 +205,7 @@ guard_shop_shopkeeper_interact_script:
                 script:
                     - inventory open d:buy_guard_inventory
 
-# The event that fires when the player purchases a guard.
+# The event that fires when the player purchases a Guard.
 player_buys_a_guard:
     type: world
     debug: false
@@ -228,7 +226,7 @@ player_buys_a_guard:
                 - flag <player> despawned_guards:<list[]>
             - money take quantity:<[price]>
 
-            # Spawns in the guard with a small offset from the player.
+            # Spawns in the Guard with a small offset from the player.
             - create player Guard <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]> traits:sentinel save:guard
 
             - define guard <entry[guard].created_npc>
@@ -303,7 +301,7 @@ guard_interact_script:
                         - lookclose false
             chat trigger:
                 1:
-                    # Deletes guard.
+                    # Deletes Guard.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
                         - if <player> == <npc.owner>:
@@ -512,12 +510,11 @@ edit_guard_data_from_inventory:
             - adjust <[inventory]> title:<[guard].name>
             - inventory open d:<[inventory]>
         on player clicks remove_item in edit_guard_inventory:
-            - inventory close
             - flag <player> removing_guard
             - ~run remove_guard def.guard:<context.item.flag[guard]>
             - flag <player> removing_guard:!
+            - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
-            - inventory close
             - if <context.item.flag[guard].has_flag[status.spawned]>:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
             - else:
@@ -543,7 +540,7 @@ edit_guard_data_from_inventory:
         on player clicks return_to_guard_list_item in edit_guard_inventory:
             - inventory open d:guard_list_inventory
 
-# Notifies the player that their guards have died while they were away.
+# Notifies the player that their Guards have died while they were away.
 guard_died_while_away:
     type: world
     events:
@@ -606,7 +603,7 @@ return_to_guard_list_item:
     material: spectral_arrow
     display name: <&[toggleable_items]>Go Back
 
-# Opens the guard list.
+# Opens the Guard list.
 open_guard_list_inventory:
     type: command
     debug: false
@@ -670,7 +667,7 @@ guard_list_tip:
         - <yellow>Despawn<white> - Tells the guard to
         - <white> despawn temporarily.
         - <yellow>Remove<white> - Tells the guard to
-        - <white> despawn PERMANANTLY!
+        - <white> despawn PERMANENTLY!
         - <white>To spawn in any despawned Guards,
         - <white>use the command<&co>
         - <yellow>/spawnguards
@@ -684,7 +681,7 @@ spawn_guards:
     permission: npcguardshop.spawn_guards
     debug: false
     script:
-        # Spawns in any unspawned guards.
+        # Spawns in any unspawned Guards.
         - foreach <player.flag[despawned_guards]> as:guard:
             - run spawn_guard def.guard:<[guard]>
 
@@ -700,7 +697,7 @@ reload_guards_command:
         - run reload_guards
         - narrate "Guards reloaded!" format:guard_shop_command_finished_format
 
-# Task to reload the Guards. Mainly for administrtors/operators. Reload the guards when you edit any of these config values in the `guard_shop_config` container:
+# Task to reload the Guards. Mainly for administrtors/operators. Reload the Guards when you edit any of these config values in the `guard_shop_config` container:
 #   skin (texture, signature, and/or uuid)
 #   respawn_delay
 #   attack_rate
@@ -753,7 +750,7 @@ player_leaves_despawn_guards:
     debug: false
     events:
         on player quits flagged:guards:
-            # Loops through all the player's guards and despawns them.
+            # Loops through all the player's Guards and despawns them.
             - if <script[guard_shop_config].parsed_key[guard.despawn_on_owner_leave]>:
                 - despawn <player.flag[guards]>
 
@@ -763,7 +760,7 @@ player_joins_respawn_guards:
     debug: false
     events:
         on player joins flagged:guards:
-            # Loops through all the player's guards and respawns them.
+            # Loops through all the player's Guards and respawns them.
             - if <script[guard_shop_config].parsed_key[guard.respawn_on_owner_join]>:
                 - spawn <player.flag[guards]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
 
