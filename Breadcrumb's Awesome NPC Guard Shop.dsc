@@ -752,7 +752,7 @@ player_joins_respawn_guards:
         on player joins flagged:guards:
             # Loops through all the player's guards and respawns them.
             - if <script[guard_shop_config].parsed_key[guard.respawn_on_owner_join]>:
-                - spawn <player.flag[guards]> <player.location.add[1,0,1]>
+                - spawn <player.flag[guards]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
