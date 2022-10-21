@@ -10,7 +10,7 @@
 # @date 2022-10-15
 # @denizen-build REL-1778
 # @script-version 3.4
-# @github BreadcrumbIsTaken/denizen-bounties
+# @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
 #   Denizen (to run this script)
