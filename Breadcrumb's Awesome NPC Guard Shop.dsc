@@ -235,7 +235,9 @@ player_buys_a_guard:
 
             - flag <player> guards:->:<[guard]>
             # Default statuses.
-            - flag <[guard]> statuses:<list[following|aggressive|spawned]>
+            - flag <[guard]> status.following
+            - flag <[guard]> status.aggressive
+            - flag <[guard]> status.spawned
 
             - flag <player> guard_ownership_amount:++
 
@@ -359,10 +361,8 @@ stop_following:
     script:
         - execute "sentinel guard --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains staying:
-            - if <[guard].flag[statuses]> contains following:
-                - flag <[guard]> statuses:<-:following
-            - flag <[guard]> statuses:->:staying
+        - if <[guard].has_flag[status.following]>:
+            - flag <[guard]> status.following:!
 
 # Task to make the Guard follow you.
 start_following:
@@ -373,10 +373,8 @@ start_following:
         - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
         - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains following:
-            - if <[guard].flag[statuses]> contains staying:
-                - flag <[guard]> statuses:<-:staying
-            - flag <[guard]> statuses:->:following
+        - if !<[guard].has_flag[status.following]>:
+            - flag <[guard]> status.following
 
 # Task to make the Guard passive.
 become_passive:
@@ -387,10 +385,8 @@ become_passive:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains passive:
-            - if <[guard].flag[statuses]> contains aggressive:
-                - flag <[guard]> statuses:<-:aggressive
-            - flag <[guard]> statuses:->:passive
+        - if <[guard].has_flag[status.aggressive]>:
+            - flag <[guard]> status.aggressive:!
 
 # Task to make the Guard aggressive.
 become_aggressive:
@@ -401,10 +397,8 @@ become_aggressive:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains aggressive:
-            - if <[guard].flag[statuses]> contains passive:
-                - flag <[guard]> statuses:<-:passive
-            - flag <[guard]> statuses:->:aggressive
+        - if !<[guard].has_flag[status.aggressive]>:
+            - flag <[guard]> status.aggressive
 
 # Task to despawn the Guard.
 despawn_guard:
@@ -413,10 +407,8 @@ despawn_guard:
     debug: false
     script:
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains despawned:
-            - if <[guard].flag[statuses]> contains spawned:
-                - flag <[guard]> statuses:<-:spawned
-            - flag <[guard]> statuses:->:despawned
+        - if <[guard].has_flag[status.spawned]>:
+            - flag <[guard]> status.spawned:!
             - despawn <[guard]>
 
 # Task to spawn the Guard.
@@ -426,12 +418,9 @@ spawn_guard:
     debug: false
     script:
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
-        - if <[guard].flag[statuses]> !contains spawned:
-            - if <[guard].flag[statuses]> contains despawned:
-                - flag <[guard]> statuses:<-:despawned
-            - flag <[guard]> statuses:->:spawned
-            - flag <player> despawned_guards:<-:<[guard]>
-            - spawn <[guard]> <player.location.add[1,0,1]>
+        - if !<[guard].has_flag[status.spawned]>:
+            - flag <[guard]> status.spawned
+            - spawn <[guard]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
@@ -448,8 +437,22 @@ guard_list_inventory:
             - foreach <player.flag[guards]> as:guard:
                 - define display <[guard].name>
                 - define lore <list[<white>Statuses:]>
-                - foreach <[guard].flag[statuses]> as:status:
-                    - define "lore:->:<white>- <&[guard_status]><[status].to_titlecase>"
+
+                - if <[guard].has_flag[status.following]>:
+                    - define "lore:->:<white>- <&[guard_status]>Following"
+                - else:
+                    - define "lore:->:<white>- <&[guard_status]>Staying"
+
+                - if <[guard].has_flag[status.aggressive]>:
+                    - define "lore:->:<white>- <&[guard_status]>Aggressive"
+                - else:
+                    - define "lore:->:<white>- <&[guard_status]>Passive"
+
+                - if <[guard].has_flag[status.spawned]>:
+                    - define "lore:->:<white>- <&[guard_status]>Spawned"
+                - else:
+                    - define "lore:->:<white>- <&[guard_status]>Despawned"
+
                 - define "lore:->:<white>Left click to edit!"
                 - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
                 - define items:->:<[item]>
@@ -487,16 +490,18 @@ edit_guard_data_from_inventory:
 
             - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
             - inventory adjust d:<[inventory]> slot:5 "lore:<white>Edit this guard!"
-            - foreach <[guard].flag[statuses]> as:status:
-                - if <[status]> in following|staying:
-                    - define following_or_not_following:<[status]>
-                - if <[status]> in passive|aggressive:
-                    - define passive_or_aggressive:<[status]>
-            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle ggressiveness.|<white>Currently: <&[guard_status]><[passive_or_aggressive]>"
-            - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]><[following_or_not_following]>"
 
-            - inventory flag d:<[inventory]> slot:24 status:<[passive_or_aggressive]>
-            - inventory flag d:<[inventory]> slot:25 status:<[following_or_not_following]>
+            - if <[guard].has_flag[status.aggressive]>:
+                - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Aggressive"
+                - inventory flag d:<[inventory]> slot:24 status.aggressive
+            - else:
+                - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Passive"
+
+            - if <[guard].has_flag[status.following]>:
+                - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Following"
+                - inventory flag d:<[inventory]> slot:25 status.following
+            - else:
+                - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Staying"
 
             - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
             - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
@@ -513,25 +518,25 @@ edit_guard_data_from_inventory:
             - flag <player> removing_guard:!
         on player clicks despawn_item in edit_guard_inventory:
             - inventory close
-            - if <context.item.flag[guard].flag[statuses]> contains spawned:
+            - if <context.item.flag[guard].has_flag[status.spawned]>:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]>
         on player clicks spawn_item in edit_guard_inventory:
             - inventory close
-            - if <context.item.flag[guard].flag[statuses]> contains despawned:
+            - if !<context.item.flag[guard].has_flag[status.spawned]>:
                 - run spawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]>
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
             - inventory close
-            - if <context.item.flag[status]> == passive:
-                - run become_aggressive def.guard:<context.item.flag[guard]>
-            - else:
+            - if <context.item.has_flag[status.aggressive]>:
                 - run become_passive def.guard:<context.item.flag[guard]>
+            - else:
+                - run become_aggressive def.guard:<context.item.flag[guard]>
         on player clicks toggle_following_item in edit_guard_inventory:
             - inventory close
-            - if <context.item.flag[status]> == following:
+            - if <context.item.has_flag[status.following]>:
                 - run stop_following def.guard:<context.item.flag[guard]>
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
