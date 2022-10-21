@@ -127,6 +127,20 @@ guard_shop_config:
         attack_range: 3
         # The maximum distance an NPC will chase an entity.
         chase_range: 30
+        # Commands that are said in chat when the owner is within the Guard's proximity radius.
+        commands:
+            # Set the command to delete the guard. Is case insensitive.
+            remove_guard: remove
+            # Set the command to tell the guard to stop following the player. Is case insensitive.
+            stop_following: stay
+            # Set the command to tell the guard to continue following the player. Is case insensitive.
+            start_following: follow
+            # Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
+            become_passive: passive
+            # Set the command to tell the guard TO attack enemies. Is case insensitive.
+            become_aggressive: aggressive
+            # Set the command to tell the guard to despawn. Is case insensitive.
+            despawn_guard: despawn
     dialogue:
         # Dialoge for the shopkeeper. Is said in the chat. Formatting is automatically applied to include the Shopkeeper's name in chat.
         shopkeeper:
@@ -288,40 +302,34 @@ guard_interact_script:
             chat trigger:
                 1:
                     # Deletes guard.
-                    # / CONFIG: Set the command to delete the guard. Is case insensitive.
-                    trigger: /remove/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
                         - flag <player> removing_guard
                         - ~run remove_guard def.guard:<npc>
                         - flag <player> removing_guard:!
                 2:
                     # Stop following.
-                    # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
-                    trigger: /stay/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
                     script:
                         - run stop_following def.guard:<npc>
                 3:
                     # Start following.
-                    # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
-                    trigger: /follow/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
                     script:
                         - run start_following def.guard:<npc>
                 4:
                     # Don't attack.
-                    # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
-                    trigger: /passive/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
                     script:
                         - run become_passive def.guard:<npc>
                 5:
                     # Do attack.
-                    # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
-                    trigger: /aggressive/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
                     script:
                         - run become_aggressive def.guard:<npc>
                 6:
                     # Despawn.
-                    # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
-                    trigger: /despawn/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
                     script:
                         - run despawn_guard def.guard:<npc>
 
