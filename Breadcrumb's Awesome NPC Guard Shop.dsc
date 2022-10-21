@@ -477,7 +477,7 @@ edit_guard_inventory:
     slots:
         - [] [] [] [] [guard_head_clickable] [] [] [] []
         - [] [] [] [] [] [] [] [] []
-        - [] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
+        - [return_to_guard_list_item] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
 
 # The event that fires to open the Guard edit inventory, which sets up all the dynamic items and their lore.
 edit_guard_data_from_inventory:
@@ -540,6 +540,8 @@ edit_guard_data_from_inventory:
                 - run stop_following def.guard:<context.item.flag[guard]>
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
+        on player clicks return_to_guard_list_item in edit_guard_inventory:
+            - inventory open d:guard_list_inventory
 
 # Notifies the player that their guards have died while they were away.
 guard_died_while_away:
@@ -597,6 +599,12 @@ toggle_following_item:
     debug: false
     material: lead
     display name: <&[toggleable_items]>Toggle Following
+
+return_to_guard_list_item:
+    type: item
+    debug: false
+    material: spectral_arrow
+    display name: <&[toggleable_items]>Go Back
 
 # Opens the guard list.
 open_guard_list_inventory:
