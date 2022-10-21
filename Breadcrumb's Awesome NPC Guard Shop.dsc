@@ -304,34 +304,40 @@ guard_interact_script:
                     # Deletes guard.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
-                        - flag <player> removing_guard
-                        - ~run remove_guard def.guard:<npc>
-                        - flag <player> removing_guard:!
+                        - if <player> == <npc.owner>:
+                            - flag <player> removing_guard
+                            - ~run remove_guard def.guard:<npc>
+                            - flag <player> removing_guard:!
                 2:
                     # Stop following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
                     script:
-                        - run stop_following def.guard:<npc>
+                        - if <player> == <npc.owner>:
+                            - run stop_following def.guard:<npc>
                 3:
                     # Start following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
                     script:
-                        - run start_following def.guard:<npc>
+                        - if <player> == <npc.owner>:
+                            - run start_following def.guard:<npc>
                 4:
                     # Don't attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
                     script:
-                        - run become_passive def.guard:<npc>
+                        - if <player> == <npc.owner>:
+                            - run become_passive def.guard:<npc>
                 5:
                     # Do attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
                     script:
-                        - run become_aggressive def.guard:<npc>
+                        - if <player> == <npc.owner>:
+                            - run become_aggressive def.guard:<npc>
                 6:
                     # Despawn.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
                     script:
-                        - run despawn_guard def.guard:<npc>
+                        - if <player> == <npc.owner>:
+                            - run despawn_guard def.guard:<npc>
 
 # Task to remove a Guard.
 remove_guard:
