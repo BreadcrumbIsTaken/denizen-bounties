@@ -41,6 +41,7 @@
 #       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the Guard.
 #       guard_status -- The color that indicates the status of the Guard. Shows up in item lores.
 #       reload_success -- The color that indicates the Guards have successfully reloaded. Shows up in chat.
+#       currency_color -- The color that colors the display of currency. Shows up in an inventory when buying a Guard.
 #   Here are some defaults that you can copy/paste into your config.yml file:
 #       guard_shop: <dark_aqua>
 #       guard_name: <gold>
@@ -50,6 +51,7 @@
 #       use_guard_tip: <green>
 #       guard_status: <blue>
 #       reload_success: <green>
+#       currency_color: <green>
 #
 # Guard commands:
 #   When in the proximity range specified in the "guard_shop_config" container, you can give the Guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard.
@@ -641,7 +643,7 @@ guard_head_clickable:
     material: player_head
     display name: Purchase a Guard!
     lore:
-        - <white>Price:<green> $<script[guard_shop_config].parsed_key[guard.price]>
+        - <white>Price: <&[currency_color]><server.economy.format[<script[guard_shop_config].parsed_key[guard.price]>]>
     mechanisms:
         skull_skin: <script[guard_shop_config].parsed_key[guard.skin.uuid]>|<script[guard_shop_config].parsed_key[guard.skin.texture]>
 
@@ -802,4 +804,5 @@ guard_shop_adjust_custom_colors:
                 use_guard_tip: <green>
                 guard_status: <blue>
                 reload_success: <green>
+                currency_color: <green>
             - adjust server default_colors:<[defaults]>
