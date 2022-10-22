@@ -417,7 +417,6 @@ spawn_guard:
     definitions: guard
     debug: false
     script:
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
         - if !<[guard].has_flag[status.spawned]>:
             - flag <[guard]> status.spawned
             - spawn <[guard]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
@@ -496,7 +495,7 @@ edit_guard_data_from_inventory:
             - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
             - flag <player> acting_guard:<context.item.flag[guard]>
-            - if <context.item.flag[guard].has_flag[status.spawned]>:
+            - if <context.item.flag[guard].has_flag[status.spawned]> || <context.item.flag[guard].is_spawned>:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
             - else:
@@ -505,7 +504,7 @@ edit_guard_data_from_inventory:
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks spawn_item in edit_guard_inventory:
             - flag <player> acting_guard:<context.item.flag[guard]>
-            - if !<context.item.flag[guard].has_flag[status.spawned]>:
+            - if !<context.item.flag[guard].has_flag[status.spawned]> || !<context.item.flag[guard].is_spawned>:
                 - run spawn_guard def.guard:<context.item.flag[guard]>
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
             - else:
