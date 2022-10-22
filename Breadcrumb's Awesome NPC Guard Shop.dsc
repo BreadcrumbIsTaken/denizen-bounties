@@ -485,32 +485,7 @@ edit_guard_data_from_inventory:
     debug: false
     events:
         on player clicks guard_head_clickable in guard_list_inventory:
-            - define inventory <inventory[edit_guard_inventory]>
-            - define guard <context.item.flag[guard]>
-
-            - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
-            - inventory adjust d:<[inventory]> slot:5 "lore:<white>Edit this guard!"
-
-            - if <[guard].has_flag[status.aggressive]>:
-                - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Aggressive"
-                - inventory flag d:<[inventory]> slot:24 status.aggressive
-            - else:
-                - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Passive"
-
-            - if <[guard].has_flag[status.following]>:
-                - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Following"
-                - inventory flag d:<[inventory]> slot:25 status.following
-            - else:
-                - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Staying"
-
-            - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:23 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
-
-            - adjust <[inventory]> title:<[guard].name>
-            - inventory open d:<[inventory]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks remove_item in edit_guard_inventory:
             - flag <player> removing_guard
             - ~run remove_guard def.guard:<context.item.flag[guard]>
@@ -521,26 +496,60 @@ edit_guard_data_from_inventory:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks spawn_item in edit_guard_inventory:
-            - inventory close
             - if !<context.item.flag[guard].has_flag[status.spawned]>:
                 - run spawn_guard def.guard:<context.item.flag[guard]>
             - else:
                 - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
-            - inventory close
             - if <context.item.has_flag[status.aggressive]>:
                 - run become_passive def.guard:<context.item.flag[guard]>
             - else:
                 - run become_aggressive def.guard:<context.item.flag[guard]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_following_item in edit_guard_inventory:
-            - inventory close
             - if <context.item.has_flag[status.following]>:
                 - run stop_following def.guard:<context.item.flag[guard]>
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
+            - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks return_to_guard_list_item in edit_guard_inventory:
             - inventory open d:guard_list_inventory
+
+# Opens the inventory to edit a Guard and adjusts the items in the inventory based on the status of the Guard.
+open_edit_guard_inventory:
+    type: task
+    definitions: guard
+    debug: false
+    script:
+        - define inventory <inventory[edit_guard_inventory]>
+
+        - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
+        - inventory adjust d:<[inventory]> slot:5 "lore:<white>Edit this guard!"
+
+        - if <[guard].has_flag[status.aggressive]>:
+            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Aggressive"
+            - inventory flag d:<[inventory]> slot:24 status.aggressive
+        - else:
+            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Passive"
+
+        - if <[guard].has_flag[status.following]>:
+            - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Following"
+            - inventory flag d:<[inventory]> slot:25 status.following
+        - else:
+            - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Staying"
+
+        - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
+        - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
+        - inventory flag d:<[inventory]> slot:23 guard:<[guard]>
+        - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
+        - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
+
+        - adjust <[inventory]> title:<[guard].name>
+        - inventory open d:<[inventory]>
 
 # Notifies the player that their Guards have died while they were away.
 guard_died_while_away:
