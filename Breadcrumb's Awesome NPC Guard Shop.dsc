@@ -311,42 +311,61 @@ guard_interact_script:
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - ~run remove_guard def.guard:<npc>
+                            - flag <player> removing_guard
+                            - flag <player> guards:<-:<npc>
+                            - flag <player> guard_ownership_amount:--
+                            - flag <npc> statuses:!
+                            - remove <npc>
+                            - flag <player> removing_guard:!
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format_linked
                 2:
                     # Stop following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - run stop_following def.guard:<npc>
+                            - execute "sentinel guard --id <npc.id>" as_server silent
+                            - if <npc.has_flag[status.following]>:
+                                - flag <npc> status.following:!
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format_linked
                 3:
                     # Start following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - run start_following def.guard:<npc>
+                            - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
+                            - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <npc.id>" as_server silent
+                            - if !<npc.has_flag[status.following]>:
+                                - flag <npc> status.following
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format_linked
                 4:
                     # Don't attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - run become_passive def.guard:<npc>
+                            - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+                                - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
+                                - if <npc.has_flag[status.aggressive]>:
+                                    - flag <npc> status.aggressive:!
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format_linked
                 5:
                     # Do attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - run become_aggressive def.guard:<npc>
+                            - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+                                - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
+                                - if !<npc.has_flag[status.aggressive]>:
+                                    - flag <npc> status.aggressive
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format_linked
                 6:
                     # Despawn.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - run despawn_guard def.guard:<npc>
+                            - flag <player> despawning_guard
+                            - flag <npc> status.spawned:!
+                            - despawn <npc>
+                            - flag <player> despawning_guard:!
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format_linked
 
 # Task to remove a Guard.
