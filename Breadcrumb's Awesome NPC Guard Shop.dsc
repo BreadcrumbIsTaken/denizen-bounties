@@ -35,7 +35,6 @@
 #   Here is a list of config values that you can set:
 #       guard_shop -- Colors the words "Guard Shop". Shows up in chat said by the Shopkeeper and in its GUI.
 #       guard_name -- The color that changes the Guard's name. Shows up in nametag and in chat.
-#       guardlist_command -- Colors the command in chat. Said by default by the shopkeeper.
 #       shopkeeper_name -- The color that changes the Shopkeeper's name. Shows up in nametag and in chat.
 #       toggleable_items -- The color of the display name of items that let you edit the Guards. Shows up in an inventory.
 #       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the Guard.
@@ -47,7 +46,6 @@
 #   Here are some defaults that you can copy/paste into your config.yml file:
 #       guard_shop: <dark_aqua>
 #       guard_name: <gold>
-#       guardlist_command: <yellow>
 #       shopkeeper_name: <red>
 #       toggleable_items: <red>
 #       use_guard_tip: <green>
@@ -157,7 +155,7 @@ guard_shop_config:
             # What the shopkeeper will say when the player does not have enough money.
             not_enough_money: Sorry, but it appears that you don't have enough money to buy a Guard.
             # What the shopkeeper will say when the player purchases a Guard.
-            purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <&[guardlist_command]>/guardlist
+            purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <yellow>/guardlist
         guard:
             # What the Guard will say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1.
             removed_on_death: I have died! So long friend.
@@ -859,7 +857,6 @@ guard_shop_adjust_custom_colors:
         - definemap defaults:
             guard_shop: <dark_aqua>
             guard_name: <gold>
-            guardlist_command: <yellow>
             shopkeeper_name: <red>
             toggleable_items: <red>
             use_guard_tip: <green>
