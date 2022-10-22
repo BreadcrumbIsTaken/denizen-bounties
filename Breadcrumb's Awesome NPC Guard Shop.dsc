@@ -599,6 +599,7 @@ open_edit_guard_inventory:
 # Notifies the player that their Guards have died while they were away.
 guard_died_while_away:
     type: world
+    debug: false
     events:
         on player joins flagged:guards_died_while_away:
         - foreach <player.flag[guards_died_while_away]> as:guard:
@@ -690,7 +691,6 @@ buy_guard_inventory:
     - [] [] [] [] [] [] [] [] []
 
 # Guard head for "buy_guard_inventory"
-# / CONFIG: Configure the "display name" and "lore" however you want!
 guard_head_clickable:
     type: item
     debug: false
@@ -853,6 +853,7 @@ guard_shop_command_finished_format:
 # If the server does not have any of the default colors set, then set them.
 guard_shop_adjust_custom_colors:
     type: world
+    debug: false
     events:
         on scripts loaded:
         - definemap defaults:
