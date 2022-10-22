@@ -42,6 +42,8 @@
 #       guard_status -- The color that indicates the status of the Guard. Shows up in item lores.
 #       reload_success -- The color that indicates the Guards have successfully reloaded. Shows up in chat.
 #       currency_color -- The color that colors the display of currency. Shows up in an inventory when buying a Guard.
+#       shopkeeper_dialogue -- The color of the Shopkeeper's dialogue.
+#       guard_dialogue -- The color of the Guard's dialogue.
 #   Here are some defaults that you can copy/paste into your config.yml file:
 #       guard_shop: <dark_aqua>
 #       guard_name: <gold>
@@ -52,6 +54,8 @@
 #       guard_status: <blue>
 #       reload_success: <green>
 #       currency_color: <green>
+#       shopkeeper_dialogue: <white>
+#       guard_dialogue: <white>
 #
 # Guard commands:
 #   When in the proximity range specified in the "guard_shop_config" container, you can give the Guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard.
@@ -820,19 +824,19 @@ player_joins_respawn_guards:
 guard_shop_shopkeeper_chat_format:
     type: format
     debug: false
-    format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <[text]>
+    format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <&[shopkeeper_dialogue]><[text]>
 
 # Chat format for Guards.
 guard_shop_guard_chat_format_linked:
     type: format
     debug: false
-    format: <npc.name><reset>: <[text]>
+    format: <npc.name><reset>: <&[guard_dialogue]><[text]>
 
 # Chat format for Guards.
 guard_shop_guard_chat_format:
     type: format
     debug: false
-    format: <player.flag[acting_guard].name><reset>: <[text]>
+    format: <player.flag[acting_guard].name><reset>: <&[guard_dialogue]><[text]>
 
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
@@ -861,4 +865,6 @@ guard_shop_adjust_custom_colors:
             guard_status: <blue>
             reload_success: <green>
             currency_color: <green>
+            shopkeeper_dialogue: <white>
+            guard_dialogue: <white>
         - adjust server default_colors:<[defaults]>
