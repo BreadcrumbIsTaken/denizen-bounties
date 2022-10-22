@@ -285,6 +285,10 @@ personal_guard:
                     - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_death]> format:guard_shop_guard_chat_format targets:<npc.owner>
                 - else:
                     - flag <npc.owner> guards_died_while_away:->:<npc>
+        on despawn:
+            - if !<npc.owner.has_flag[despawning_guard]>:
+                - if <npc.has_flag[status.spawned]>:
+                    - flag <npc> status.spawned:!
     interact scripts:
         - guard_interact_script
 
@@ -307,10 +311,8 @@ guard_interact_script:
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
                         - if <player> == <npc.owner>:
-                            - flag <player> removing_guard
                             - ~run remove_guard def.guard:<npc>
                             - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format_linked
-                            - flag <player> removing_guard:!
                 2:
                     # Stop following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
@@ -353,10 +355,12 @@ remove_guard:
     definitions: guard
     debug: false
     script:
+        - flag <player> removing_guard
         - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
         - flag <[guard]> statuses:!
         - remove <[guard]>
+        - flag <player> removing_guard:!
 
 # Task to stop a Guard from following you.
 stop_following:
@@ -408,8 +412,10 @@ despawn_guard:
     debug: false
     script:
         - if <[guard].has_flag[status.spawned]>:
+            - flag <player> despawning_guard
             - flag <[guard]> status.spawned:!
             - despawn <[guard]>
+            - flag <player> despawning_guard:!
 
 # Task to spawn the Guard.
 spawn_guard:
