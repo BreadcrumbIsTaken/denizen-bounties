@@ -309,6 +309,7 @@ guard_interact_script:
                         - if <player> == <npc.owner>:
                             - flag <player> removing_guard
                             - ~run remove_guard def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format_linked
                             - flag <player> removing_guard:!
                 2:
                     # Stop following.
@@ -316,30 +317,35 @@ guard_interact_script:
                     script:
                         - if <player> == <npc.owner>:
                             - run stop_following def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format_linked
                 3:
                     # Start following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
                     script:
                         - if <player> == <npc.owner>:
                             - run start_following def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format_linked
                 4:
                     # Don't attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
                     script:
                         - if <player> == <npc.owner>:
                             - run become_passive def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format_linked
                 5:
                     # Do attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
                     script:
                         - if <player> == <npc.owner>:
                             - run become_aggressive def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format_linked
                 6:
                     # Despawn.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
                     script:
                         - if <player> == <npc.owner>:
                             - run despawn_guard def.guard:<npc>
+                            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format_linked
 
 # Task to remove a Guard.
 remove_guard:
@@ -350,7 +356,6 @@ remove_guard:
         - flag <player> guards:<-:<[guard]>
         - flag <player> guard_ownership_amount:--
         - flag <[guard]> statuses:!
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format
         - remove <[guard]>
 
 # Task to stop a Guard from following you.
@@ -360,7 +365,6 @@ stop_following:
     debug: false
     script:
         - execute "sentinel guard --id <[guard].id>" as_server silent
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format
         - if <[guard].has_flag[status.following]>:
             - flag <[guard]> status.following:!
 
@@ -372,7 +376,6 @@ start_following:
     script:
         - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
         - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
         - if !<[guard].has_flag[status.following]>:
             - flag <[guard]> status.following
 
@@ -384,7 +387,6 @@ become_passive:
     script:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
         - if <[guard].has_flag[status.aggressive]>:
             - flag <[guard]> status.aggressive:!
 
@@ -396,7 +398,6 @@ become_aggressive:
     script:
         - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
             - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
         - if !<[guard].has_flag[status.aggressive]>:
             - flag <[guard]> status.aggressive
 
@@ -406,7 +407,6 @@ despawn_guard:
     definitions: guard
     debug: false
     script:
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
         - if <[guard].has_flag[status.spawned]>:
             - flag <[guard]> status.spawned:!
             - despawn <[guard]>
@@ -488,32 +488,49 @@ edit_guard_data_from_inventory:
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks remove_item in edit_guard_inventory:
             - flag <player> removing_guard
+            - flag <player> acting_guard:<context.item.flag[guard]>
             - ~run remove_guard def.guard:<context.item.flag[guard]>
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format
             - flag <player> removing_guard:!
+            - flag <player> acting_guard:!
             - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
+            - flag <player> acting_guard:<context.item.flag[guard]>
             - if <context.item.flag[guard].has_flag[status.spawned]>:
                 - run despawn_guard def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
             - else:
-                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]> format:guard_shop_guard_chat_format
+            - flag <player> acting_guard:!
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks spawn_item in edit_guard_inventory:
+            - flag <player> acting_guard:<context.item.flag[guard]>
             - if !<context.item.flag[guard].has_flag[status.spawned]>:
                 - run spawn_guard def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
             - else:
-                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]> format:guard_shop_guard_chat_format
+            - flag <player> acting_guard:!
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
+            - flag <player> acting_guard:<context.item.flag[guard]>
             - if <context.item.has_flag[status.aggressive]>:
                 - run become_passive def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
             - else:
                 - run become_aggressive def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
+            - flag <player> acting_guard:!
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_following_item in edit_guard_inventory:
+            - flag <player> acting_guard:<context.item.flag[guard]>
             - if <context.item.has_flag[status.following]>:
                 - run stop_following def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format
             - else:
                 - run start_following def.guard:<context.item.flag[guard]>
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
+            - flag <player> acting_guard:!
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
             - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks return_to_guard_list_item in edit_guard_inventory:
@@ -782,10 +799,16 @@ guard_shop_shopkeeper_chat_format:
     format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <[text]>
 
 # Chat format for Guards.
-guard_shop_guard_chat_format:
+guard_shop_guard_chat_format_linked:
     type: format
     debug: false
     format: <npc.name><reset>: <[text]>
+
+# Chat format for Guards.
+guard_shop_guard_chat_format:
+    type: format
+    debug: false
+    format: <player.flag[acting_guard].name><reset>: <[text]>
 
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
