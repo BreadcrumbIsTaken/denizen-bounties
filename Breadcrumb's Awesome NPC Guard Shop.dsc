@@ -7,9 +7,9 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-10-22
-# @denizen-build REL-1778
-# @script-version 3.5
+# @date 2022-11-25
+# @denizen-build REL-1780
+# @script-version 3.6
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -304,9 +304,6 @@ guard_interact_script:
                 entry:
                     script:
                     - lookclose true range:<script[guard_shop_config].parsed_key[guard.proximity_radius]> realistic
-                exit:
-                    script:
-                    - lookclose false
             chat trigger:
                 1:
                     # Deletes Guard.
@@ -591,7 +588,7 @@ open_edit_guard_inventory:
     - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
     - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
 
-    - adjust <[inventory]> title:<[guard].name>
+    - adjust <[inventory]> "title:<&[guard_shop]>Editing: <[guard].name>"
     - inventory open d:<[inventory]>
 
 # Notifies the player that their Guards have died while they were away.
@@ -709,22 +706,22 @@ guard_list_tip:
     lore:
     - <white>You can also say the following
     - <white>commands in chat to tell
-    - <white>your guard what to do.<&co>
-    - <yellow>Passive<white> - Tells the guard to not
-    - <white>fight any entities.
-    - <yellow>Aggresive<white> - Tells the guard to fight
-    - <white>any entities that may cause you harm.
-    - <yellow>Stay<white> - Tells the guard to stop following
-    - <white>you around.
-    - <yellow>Follow<white> - Tells the guard to start
-    - <white>following you around.
-    - <yellow>Despawn<white> - Tells the guard to
-    - <white> despawn temporarily.
-    - <yellow>Remove<white> - Tells the guard to
+    - <white>your guard what to do<&co>
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.remove_guard].to_titlecase><white> - Tells the guard to
     - <white> despawn PERMANENTLY!
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.stop_following].to_titlecase><white> - Tells the guard to stop following
+    - <white>you around.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.start_following].to_titlecase><white> - Tells the guard to start
+    - <white>following you around.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.become_passive].to_titlecase><white> - Tells the guard to not
+    - <white>fight any entities.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.become_aggressive].to_titlecase><white> - Tells the guard to fight
+    - <white>any entities that may cause you harm.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.despawn_guard].to_titlecase><white> - Tells the guard to
+    - <white> despawn temporarily.
     - <white>To spawn in any despawned Guards,
     - <white>use the command<&co>
-    - <yellow>/spawnguards
+    - <&[use_guard_tip]>/spawnguards
 
 # Command to spawn the Guards.
 spawn_guards:
@@ -816,7 +813,27 @@ player_joins_respawn_guards:
         on player joins flagged:guards:
         # Loops through all the player's Guards and respawns them.
         - if <script[guard_shop_config].parsed_key[guard.respawn_on_owner_join]>:
+            # Spawn the Guard back in with a bit of offset from the player.
             - spawn <player.flag[guards]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
+
+# If the server does not have any of the default colors set, then set them.
+guard_shop_adjust_custom_colors:
+    type: world
+    debug: false
+    events:
+        on scripts loaded:
+        - definemap defaults:
+            guard_shop: <dark_aqua>
+            guard_name: <gold>
+            shopkeeper_name: <red>
+            toggleable_items: <red>
+            guard_status: <blue>
+            use_guard_tip: <green>
+            reload_success: <green>
+            currency_color: <green>
+            shopkeeper_dialogue: <white>
+            guard_dialogue: <white>
+        - adjust server default_colors:<[defaults]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
@@ -824,13 +841,14 @@ guard_shop_shopkeeper_chat_format:
     debug: false
     format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <&[shopkeeper_dialogue]><[text]>
 
-# Chat format for Guards.
+# Chat format for Guards if there is a linked NPC.
 guard_shop_guard_chat_format_linked:
     type: format
     debug: false
     format: <npc.name><reset>: <&[guard_dialogue]><[text]>
 
-# Chat format for Guards.
+# Chat format for Guards if there is not a linked NPC.
+# Will get the guard's name from a flag.
 guard_shop_guard_chat_format:
     type: format
     debug: false
@@ -847,22 +865,3 @@ guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><&[reload_success]>Done!<reset><&rb><&co> <[text]>
-
-# If the server does not have any of the default colors set, then set them.
-guard_shop_adjust_custom_colors:
-    type: world
-    debug: false
-    events:
-        on scripts loaded:
-        - definemap defaults:
-            guard_shop: <dark_aqua>
-            guard_name: <gold>
-            shopkeeper_name: <red>
-            toggleable_items: <red>
-            use_guard_tip: <green>
-            guard_status: <blue>
-            reload_success: <green>
-            currency_color: <green>
-            shopkeeper_dialogue: <white>
-            guard_dialogue: <white>
-        - adjust server default_colors:<[defaults]>
