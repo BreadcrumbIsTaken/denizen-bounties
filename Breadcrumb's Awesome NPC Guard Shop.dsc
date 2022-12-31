@@ -7,9 +7,9 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-11-25
-# @denizen-build REL-1780
-# @script-version 3.6
+# @date 2022-12-30
+# @denizen-build REL-1782
+# @script-version 3.7
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -72,9 +72,11 @@ guard_shop_config:
         # Proximity radius.
         proximity_radius: 5
     guard:
-        # Price per Guard. This assumes you already have an ecomomy system setup using Vault. If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
+        # Price per Guard. This assumes you already have an ecomomy system setup using Vault.
+        # If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
         price: 150
-        # Changes the Guard's skin. Needs the texture and signature for the skin. See this site for more information about skin blobs: https://meta.denizenscript.com/Docs/Languages/#player%20entity%20skins%20(skin%20blobs)
+        # Changes the Guard's skin. Needs the texture and signature for the skin.
+        # See this site for more information about skin blobs: https://meta.denizenscript.com/Docs/Languages/#player%20entity%20skins%20(skin%20blobs)
         # All of these values can be found on https://mineskin.org
         skin:
             # Texture value for skin.
@@ -155,7 +157,7 @@ guard_shop_config:
             # What the shopkeeper will say when the player does not have enough money.
             not_enough_money: Sorry, but it appears that you don't have enough money to buy a Guard.
             # What the shopkeeper will say when the player purchases a Guard.
-            purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <yellow>/guardlist
+            purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <&[use_guard_tip]>/guardlist
         guard:
             # What the Guard will say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1.
             removed_on_death: I have died! So long friend.
@@ -244,10 +246,10 @@ player_buys_a_guard:
         - flag <player> guard_ownership_amount:++
 
         - assignment set script:personal_guard npc:<[guard]>
+        - adjust <[guard]> owner:<player>
         - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <player.flag[guard_ownership_amount]><reset>"
         - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>;<script[guard_shop_config].parsed_key[guard.skin.uuid]>
         - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
-        - adjust <[guard]> owner:<player>
 
         # Sentinel things.
         - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
@@ -314,9 +316,9 @@ guard_interact_script:
                         - flag <player> guards:<-:<npc>
                         - flag <player> guard_ownership_amount:--
                         - flag <npc> statuses:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shopt_guard_chat_format
                         - remove <npc>
                         - flag <player> removing_guard:!
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format_linked
                 2:
                     # Stop following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
@@ -325,7 +327,7 @@ guard_interact_script:
                         - execute "sentinel guard --id <npc.id>" as_server silent
                         - if <npc.has_flag[status.following]>:
                             - flag <npc> status.following:!
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format_linked
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shopt_guard_chat_format
                 3:
                     # Start following.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
@@ -335,7 +337,7 @@ guard_interact_script:
                         - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <npc.id>" as_server silent
                         - if !<npc.has_flag[status.following]>:
                             - flag <npc> status.following
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format_linked
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shopt_guard_chat_format
                 4:
                     # Don't attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
@@ -345,7 +347,7 @@ guard_interact_script:
                             - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
                             - if <npc.has_flag[status.aggressive]>:
                                 - flag <npc> status.aggressive:!
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format_linked
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shopt_guard_chat_format
                 5:
                     # Do attack.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
@@ -355,7 +357,7 @@ guard_interact_script:
                             - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
                             - if !<npc.has_flag[status.aggressive]>:
                                 - flag <npc> status.aggressive
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format_linked
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shopt_guard_chat_format
                 6:
                     # Despawn.
                     trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
@@ -363,9 +365,9 @@ guard_interact_script:
                     - if <player> == <npc.owner>:
                         - flag <player> despawning_guard
                         - flag <npc> status.spawned:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shopt_guard_chat_format
                         - despawn <npc>
                         - flag <player> despawning_guard:!
-                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format_linked
 
 # Task to remove a Guard.
 remove_guard:
@@ -511,50 +513,49 @@ edit_guard_data_from_inventory:
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks remove_item in edit_guard_inventory:
         - flag <player> removing_guard
-        - flag <player> acting_guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shopt_guard_chat_format
         - ~run remove_guard def.guard:<context.item.flag[guard]>
-        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shop_guard_chat_format
         - flag <player> removing_guard:!
-        - flag <player> acting_guard:!
         - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
-        - flag <player> acting_guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
         - if <context.item.flag[guard].has_flag[status.spawned]> || <context.item.flag[guard].is_spawned>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shopt_guard_chat_format
             - run despawn_guard def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shop_guard_chat_format
         - else:
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]> format:guard_shop_guard_chat_format
-        - flag <player> acting_guard:!
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]> format:guard_shopt_guard_chat_format
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks spawn_item in edit_guard_inventory:
-        - flag <player> acting_guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
         - if !<context.item.flag[guard].has_flag[status.spawned]> || !<context.item.flag[guard].is_spawned>:
             - run spawn_guard def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shop_guard_chat_format
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shopt_guard_chat_format
         - else:
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]> format:guard_shop_guard_chat_format
-        - flag <player> acting_guard:!
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]> format:guard_shopt_guard_chat_format
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
-        - flag <player> acting_guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
         - if <context.item.has_flag[status.aggressive]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shopt_guard_chat_format
             - run become_passive def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shop_guard_chat_format
         - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shopt_guard_chat_format
             - run become_aggressive def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shop_guard_chat_format
-        - flag <player> acting_guard:!
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_following_item in edit_guard_inventory:
-        - flag <player> acting_guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
         - if <context.item.has_flag[status.following]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shopt_guard_chat_format
             - run stop_following def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shop_guard_chat_format
         - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shopt_guard_chat_format
             - run start_following def.guard:<context.item.flag[guard]>
-            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shop_guard_chat_format
-        - flag <player> acting_guard:!
-        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks return_to_guard_list_item in edit_guard_inventory:
         - inventory open d:guard_list_inventory
@@ -664,7 +665,7 @@ open_guard_list_inventory:
     description: Lists all the guards you own and their statuses.
     permission: npcguardshop.open_guard_list
     aliases:
-    - openguardlist
+    - guards
     - listguards
     script:
     - inventory open d:guard_list_inventory
@@ -748,7 +749,8 @@ reload_guards_command:
     - run reload_guards
     - narrate "Guards reloaded!" format:guard_shop_command_finished_format
 
-# Task to reload the Guards. Mainly for administrtors/operators. Reload the Guards when you edit any of these config values in the `guard_shop_config` container:
+# Task to reload the Guards. Mainly for administrtors/operators.
+# Reload the Guards when you edit any of these config values in the `guard_shop_config` container:
 #   skin (texture, signature, and/or uuid)
 #   respawn_delay
 #   attack_rate
@@ -841,18 +843,11 @@ guard_shop_shopkeeper_chat_format:
     debug: false
     format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <&[shopkeeper_dialogue]><[text]>
 
-# Chat format for Guards if there is a linked NPC.
-guard_shop_guard_chat_format_linked:
+# Chat format for Guards.
+guard_shopt_guard_chat_format:
     type: format
     debug: false
-    format: <npc.name><reset>: <&[guard_dialogue]><[text]>
-
-# Chat format for Guards if there is not a linked NPC.
-# Will get the guard's name from a flag.
-guard_shop_guard_chat_format:
-    type: format
-    debug: false
-    format: <player.flag[acting_guard].name><reset>: <&[guard_dialogue]><[text]>
+    format: <npc.custom_name><reset>: <&[guard_dialogue]><[text]>
 
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
