@@ -62,7 +62,7 @@
 #   The "follow" command will make the Guards follow the owner again.
 #   The "passive" command will make the Guard not harm any entity.
 #   The "aggressive" command will make the Guard attack entities.
-#   The "remove" command will remove the Guard compleatly.
+#   The "remove" command will remove the Guard completely.
 
 guard_shop_config:
     type: data
