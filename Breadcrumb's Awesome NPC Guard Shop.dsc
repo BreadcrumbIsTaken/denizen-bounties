@@ -48,8 +48,8 @@
 #       guard_name: <gold>
 #       shopkeeper_name: <red>
 #       toggleable_items: <red>
-#       use_guard_tip: <green>
 #       guard_status: <blue>
+#       use_guard_tip: <green>
 #       reload_success: <green>
 #       currency_color: <green>
 #       shopkeeper_dialogue: <white>
