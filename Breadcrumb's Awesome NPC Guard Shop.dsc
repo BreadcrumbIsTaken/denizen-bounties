@@ -7,10 +7,10 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-10-15
-# @denizen-build REL-1778
-# @script-version 3.4
-# @github BreadcrumbIsTaken/denizen-bounties
+# @date 2022-12-30
+# @denizen-build REL-1782
+# @script-version 3.7
+# @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
 #   Denizen (to run this script)
@@ -25,37 +25,44 @@
 #   In game, use the command "/ex reload" to reload Denizen's scripts.
 #
 # How to use:
-#   Configure all the config values below and configure other places where there is a comment labled "CONFIG" to whatever values you want.
+#   Configure all the config values below in "guard_shop_config".
 #   Create an NPC for the shopkeeper and assign it the "guard_shop_shopkeeper" assignment. (/ex assignment add script:guard_shop_shopkeeper)
+#   To open the shop inventory, the player must right click the Shopkeeper NPC.
 #   Some config values will need to be reloaded to take effect. Use the command "/reloadguards" to get the data updated.
 #
 # Colors:
 #   You can customize colors for chat, nametags, etc. by adding config values into your Denizen config.yml file.
 #   Here is a list of config values that you can set:
-#       guard_shop -- Emphesises the words "Guard Shop". Shows up in chat said by the Shopkeeper and in it's GUI.
+#       guard_shop -- Colors the words "Guard Shop". Shows up in chat said by the Shopkeeper and in its GUI.
 #       guard_name -- The color that changes the Guard's name. Shows up in nametag and in chat.
 #       shopkeeper_name -- The color that changes the Shopkeeper's name. Shows up in nametag and in chat.
 #       toggleable_items -- The color of the display name of items that let you edit the Guards. Shows up in an inventory.
-#       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the guard.
+#       use_guard_tip -- The color of the display name of the item in the Guard list that explains how to use the Guard.
 #       guard_status -- The color that indicates the status of the Guard. Shows up in item lores.
 #       reload_success -- The color that indicates the Guards have successfully reloaded. Shows up in chat.
+#       currency_color -- The color that colors the display of currency. Shows up in an inventory when buying a Guard.
+#       shopkeeper_dialogue -- The color of the Shopkeeper's dialogue.
+#       guard_dialogue -- The color of the Guard's dialogue.
 #   Here are some defaults that you can copy/paste into your config.yml file:
-#       guard_shop: <dark_cyan>
+#       guard_shop: <dark_aqua>
 #       guard_name: <gold>
 #       shopkeeper_name: <red>
 #       toggleable_items: <red>
 #       use_guard_tip: <green>
 #       guard_status: <blue>
 #       reload_success: <green>
+#       currency_color: <green>
+#       shopkeeper_dialogue: <white>
+#       guard_dialogue: <white>
 #
 # Guard commands:
-#   When in the proximity range specified in the "guard_shop_config" container, you can give the guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard..
+#   When in the proximity range specified in the "guard_shop_config" container, you can give the Guards commands by typing them in chat, or by using the command: /listguards and clicking on a specific Guard.
 #   The commands are "stay", "follow", "passive", "aggressive", and "remove".
-#   The "stay" command will make the guards not follow the owner when the owner moves outside of the guard's proximity range.
-#   The "follow" command will make the guards follow the owner again.
-#   The "passive" command will make the guard not harm any entity.
-#   The "aggressive" command will make the guard attack entities.
-#   The "remove" command will remove the guard compleatly.
+#   The "stay" command will make the Guards not follow the owner when the owner moves outside of the Guard's proximity range.
+#   The "follow" command will make the Guards follow the owner again.
+#   The "passive" command will make the Guard not harm any entity.
+#   The "aggressive" command will make the Guard attack entities.
+#   The "remove" command will remove the Guard compleatly.
 
 guard_shop_config:
     type: data
@@ -65,36 +72,38 @@ guard_shop_config:
         # Proximity radius.
         proximity_radius: 5
     guard:
-        # Price per guard. This assumes you already have an ecomomy system setup using Vault. If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
+        # Price per Guard. This assumes you already have an ecomomy system setup using Vault.
+        # If you do not currently have one, check out this website for more information: https://meta.denizenscript.com/Docs/Languages/economy
         price: 150
-        # Changes the Guard's skin. Needs the texture and signature for the skin. See this site for more information about skin blobs: https://meta.denizenscript.com/Docs/Languages/#player%20entity%20skins%20(skin%20blobs)
+        # Changes the Guard's skin. Needs the texture and signature for the skin.
+        # See this site for more information about skin blobs: https://meta.denizenscript.com/Docs/Languages/#player%20entity%20skins%20(skin%20blobs)
         # All of these values can be found on https://mineskin.org
         skin:
             # Texture value for skin.
             texture: ewogICJ0aW1lc3RhbXAiIDogMTY0MjkwMzc3Njg1NiwKICAicHJvZmlsZUlkIiA6ICJkMGI4MjE1OThmMTE0NzI1ODBmNmNiZTliOGUxYmU3MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJqYmFydHl5IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM5NDBlOTgyZGZiODg4NWE1NzQwODVmMDcwYjk5ZWM1ZjE0NzQ4YzE4Y2Q1M2Q2NzNmMzc3ZmUyNzRkZjFhNTkiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==
             # Signature value for skin.
             signature: pG/azz1n93QEIYMOUTsYZsTNnMohP+eiG1tcJh+pKgfv12gFcoiRyzESCj1BaCpAShZAf8A0lseTf+qvfUcuwarWaVUHGqbxNQrQQIrY7YzuTD2AhbrnsGEs9YYQnBhlNTajeQe70nqv5rfKa8RaFsSPb+s+XzItrMXWMRh6mlM+iTxIdqpIavlq4vMFwqUa1ItVncj8Kf4+fsdzvyCEJXC94LZN+yCL9p3ahp3zKNo01jkBkNCxxlKOSW+z4o/fp+i+rHsUwMUZS6vw6em8dgp1hBlUJru+G7ohntxNThyrRqHof9Qag/GFvCcPYF8ib5nGu6uunKLovODfXz1VFsSXFOyGIFPnmXUE8MKJ5qDOUZ9RAkGIFYWeO5NXWnBbXhjaPkRI0qG3QUdkuiPgG6Bcd1cj20qk1q2LuRDxeXR69cfkKR/JHF4AxPzG13DWOxHZSe9bwtmZ/VLtCbrIozA09vnAryPAyTI3pxVLrap8ODL9yN+5TIFOmOo8lTiYdnPWVFET11g/4zK7r3XIhiAEdgdYLAhI2sXuzPkwxaitIDJhs9WJ3MMi87bzABI5EqiJEKVvpEFjpR0ok3pq6GQemmzpsCtvfRZhZi5OO1VkGiC9XU/xY5M4Yoxqi59e1bThuJxGdj867zpr1X22b3JnC5h+ZG3lf380LOVvCS4=
-            # UUID used for "guard_head_clickable".
+            # UUID value for skin.
             uuid: 864f1f7f-5995-466e-b70f-41871f98683e
-        # How many guards a player can own at one time.
+        # How many Guards a player can own at one time.
         guards_per_player: 2
         # Proximity radius for player giving commands.
         proximity_radius: 10
-        # How close to follow player.
-        follow_lead: 4
         # How fast to follow player.
         follow_speed: 1
-        # How much health the guard has.
+        # How far the player needs to go before the Guard starts following the player.
+        follow_distance: 5
+        # How much health the Guard has.
         health: 35
-        # What item to put in guard's main hand.
+        # What item to put in Guard's main hand.
         main_hand: stone_sword
         # Guard's name
         name: Guard
         # Shows up in chat before text.
         chat_name: Guard
-        # How long until guard respawns in seconds.
+        # How long until Guard respawns in seconds.
         # 0 will disable automatic respawn.
-        # -1 will delete the guard when killed.
+        # -1 will delete the Guard when killed.
         respawn_delay: 5
         attacks:
             # What to attack.
@@ -104,25 +113,74 @@ guard_shop_config:
             # What to ignore.
             # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
             - npcs
+            - owner
         avoids:
             # What to avoid.
             # See list of targets here: https://github.com/mcmonkeyprojects/Sentinel/#targets
             - creepers
         # Rate of attack in seconds.
         attack_rate: 2
-        # If true, guard will not notice entities behind it.
+        # If true, Guard will not notice entities behind it.
         # If false, it will notice entities behind it.
         realistic: false
-        # How far the player needs to go before guard starts following the player.
-        follow_distance: 5
-        # Despawns the guards when the player leaves.
+        # Despawns the Guards when the player leaves.
         despawn_on_owner_leave: true
-        # Respawns the guards when the player joins.
+        # Respawns the Guards when the player joins.
         respawn_on_owner_join: true
         # The maximum attack range of the Guard.
         attack_range: 3
-        # The maximum distance and NPC will chase an entity.
+        # The maximum distance an NPC will chase an entity.
         chase_range: 30
+        # Commands that are said in chat when the owner is within the Guard's proximity radius.
+        commands:
+            # Set the command to delete the Guard. Is case insensitive.
+            remove_guard: remove
+            # Set the command to tell the Guard to stop following the player. Is case insensitive.
+            stop_following: stay
+            # Set the command to tell the Guard to continue following the player. Is case insensitive.
+            start_following: follow
+            # Set the command to tell the Guard TO NOT attack enemies. Is case insensitive.
+            become_passive: passive
+            # Set the command to tell the Guard TO attack enemies. Is case insensitive.
+            become_aggressive: aggressive
+            # Set the command to tell the Guard to despawn. Is case insensitive.
+            despawn_guard: despawn
+    dialogue:
+        # Dialoge for the shopkeeper. Is said in the chat. Formatting is automatically applied to include the Shopkeeper's name in chat.
+        shopkeeper:
+            # What the shopkeeper should say when the player enters the proximity.
+            welcome: Welcome to the <&[guard_shop]>Guard Shop!
+            # What the shopkeeper should say when the player leaves the proximity.
+            goodbye: Goodbye!
+            # What the shopkeeper will say when the player has enough Guards.
+            enough_guards: Sorry, but you already have enough Guards for now.
+            # What the shopkeeper will say when the player does not have enough money.
+            not_enough_money: Sorry, but it appears that you don't have enough money to buy a Guard.
+            # What the shopkeeper will say when the player purchases a Guard.
+            purchases_a_guard: Thank you for your purchase! To get information about your Guards and how to use them, use the command: <&[use_guard_tip]>/guardlist
+        guard:
+            # What the Guard will say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1.
+            removed_on_death: I have died! So long friend.
+            # What the Guard will say in chat when they are removed.
+            removed_on_command: Removed!
+            # What the Guard will say in chat when they are told to stay.
+            stops_following: I will stop following you.
+            # What the Guard will say in chat when they are told to start following you.
+            starts_following: I will start following you.
+            # What the Guard will say in chat when they are told to be passive.
+            becomes_passive: I will not attack enemies from now on.
+            # What the Guard will say in chat when they are told to be aggressive.
+            becomes_aggressive: I will attack enemies from now on!
+            # What the Guard will say in chat when they are told to desapwn.
+            despawned_on_command: See you later!
+            # What the Guard should say in chat when they are spawned back in.
+            spawned_on_command: Hello! I'm back!
+            # What the Guard should say in chat when it is already spawned and tried to be spawned again.
+            already_spawned: I am already spawned!
+            # What the Guard should say in chat when it is already despawned and tried to be despawned again.
+            already_despawned: I am already despawned!
+            # What the Guard should say in chat when the Guard has died and is automatically removed if `respawn_delay` is set to -1 and the owner is offline. Will be sent when the owner rejoins.
+            died_while_away: I have died while you were away! So long friend.
 
 # Assign this assignment to any NPC to turn it into a shopkeeper for a Guard shop.
 guard_shop_shopkeeper:
@@ -130,7 +188,9 @@ guard_shop_shopkeeper:
     debug: false
     actions:
         on assignment:
-            - trigger name:proximity state:true radius:<proc[gs_data].context[shopkeeper.proximity_radius]>
+        - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]>
+        - trigger name:click state:true
+        - lookclose true range:<script[guard_shop_config].parsed_key[shopkeeper.proximity_radius]> realistic
     interact scripts:
         - guard_shop_shopkeeper_interact_script
 
@@ -143,78 +203,74 @@ guard_shop_shopkeeper_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:<proc[gs_data].context[shopkeeper.proximity_radius]> realistic
-                        # / CONFIG: What the shopkeeper should say when the player enters the proximity.
-                        - narrate "Welcome to the <&[guard_shop]>Guard Shop!" format:guard_shop_shopkeeper_chat_format
-                        - wait 1s
-                        - inventory open d:buy_guard_inventory
+                    - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.welcome]> format:guard_shop_shopkeeper_chat_format
                 exit:
                     script:
-                        - lookclose false
-                        # / CONFIG: What the shopkeeper should say when the player leaves the proximity.
-                        - narrate Goodbye! format:guard_shop_shopkeeper_chat_format
+                    - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.goodbye]> format:guard_shop_shopkeeper_chat_format
+            click trigger:
+                script:
+                - inventory open d:buy_guard_inventory
 
-# The event that fires when the player purchases a guard.
+# The event that fires when the player purchases a Guard.
 player_buys_a_guard:
     type: world
     debug: false
     events:
         on player clicks guard_head_clickable in buy_guard_inventory:
-            - inventory close
+        - inventory close
 
-            - if <player.flag[guard_ownership_amount].if_null[0]> >= <proc[gs_data].context[guard.guards_per_player]>:
-                # / CONFIG: What the shopkeeper will say when the player has enough guards.
-                - narrate "Sorry, but you already have enough Guards for now." format:guard_shop_shopkeeper_chat_format
-            - else:
-                - define price <proc[gs_data].context[guard.price]>
-                - if <player.money> < <[price]>:
-                    # / CONFIG: What the shopkeeper will say when the player does not have enough money.
-                    - narrate "Sorry, but it appears that you don't have enough money to buy a guard." format:guard_shop_shopkeeper_chat_format
-                - else:
-                    - flag <player> despawned_guards:<list[]> if:!<player.has_flag[despawned_guards]>
-                    - money take quantity:<[price]>
+        - if <player.flag[guard_ownership_amount].if_null[0]> >= <script[guard_shop_config].parsed_key[guard.guards_per_player]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.enough_guards]> format:guard_shop_shopkeeper_chat_format
+            - stop
 
-                    # Spawns in the guard.
-                    - create player Guard <player.location.add[1,0,1]> traits:sentinel save:guard
+        - define price <script[guard_shop_config].parsed_key[guard.price]>
+        - if <player.money> < <[price]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.not_enough_money]> format:guard_shop_shopkeeper_chat_format
+            - stop
 
-                    - define guard <entry[guard].created_npc>
+        - if !<player.has_flag[despawned_guards]>:
+            - flag <player> despawned_guards:<list[]>
+        - money take quantity:<[price]>
 
-                    # Configures the guard.
-                    - flag <player> guards:->:<[guard]>
-                    # Default statuses.
-                    - flag <[guard]> statuses:<list[following|aggressive|spawned]>
+        # Spawns in the Guard with a small offset from the player.
+        - create player Guard <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]> traits:sentinel save:guard
 
-                    - define guard_number <player.flag[guard_ownership_amount].if_null[0].add[1]>
-                    - flag <player> guard_ownership_amount:++
+        - define guard <entry[guard].created_npc>
 
-                    - assignment set script:personal_guard npc:<[guard]>
-                    - adjust <[guard]> "name:<&[guard_name]><proc[gs_data].context[guard.name]> <[guard_number]><reset>"
-                    - adjust <[guard]> skin_blob:<proc[gs_data].context[guard.skin.texture]>;<proc[gs_data].context[guard.skin.signature]>
-                    - equip <[guard]> hand:<proc[gs_data].context[guard.main_hand]>
-                    - adjust <[guard]> owner:<player>
+        - flag <player> guards:->:<[guard]>
+        # Default statuses.
+        - flag <[guard]> status.following
+        - flag <[guard]> status.aggressive
+        - flag <[guard]> status.spawned
 
-                    # Sentinel things.
-                    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
-                    - execute "sentinel respawntime <proc[gs_data].context[guard.respawn_delay]> --id <[guard].id>" as_server silent
-                    - execute "sentinel attackrate <proc[gs_data].context[guard.attack_rate]> --id <[guard].id>" as_server silent
-                    - execute "sentinel realistic <proc[gs_data].context[guard.realistic]> --id <[guard].id>" as_server silent
-                    - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
-                    - execute "sentinel health <proc[gs_data].context[guard.health]> --id <[guard].id>" as_server silent
-                    - execute "sentinel range <proc[gs_data].context[guard.attack_range]> --id <[guard].id>" as_server silent
-                    - execute "sentinel chaserange <proc[gs_data].context[guard.chase_range]> --id <[guard].id>" as_server silent
+        - flag <player> guard_ownership_amount:++
 
-                    # Adds targets, ignores, and avoids.
-                    - foreach <proc[gs_data].context[guard.attacks]> as:i:
-                        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.ignores]> as:i:
-                        - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
-                    - foreach <proc[gs_data].context[guard.avoids]> as:i:
-                        - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+        - assignment set script:personal_guard npc:<[guard]>
+        - adjust <[guard]> owner:<player>
+        - adjust <[guard]> "name:<&[guard_name]><script[guard_shop_config].parsed_key[guard.name]> <player.flag[guard_ownership_amount]><reset>"
+        - adjust <[guard]> skin_blob:<script[guard_shop_config].parsed_key[guard.skin.texture]>;<script[guard_shop_config].parsed_key[guard.skin.signature]>;<script[guard_shop_config].parsed_key[guard.skin.uuid]>
+        - equip <[guard]> hand:<script[guard_shop_config].parsed_key[guard.main_hand]>
 
-                    - wait 1s
-                    # / CONFIG: What the shopkeeper will say when the player purchases a Guard.
-                    - narrate "Thank you for your purchase!" format:guard_shop_shopkeeper_chat_format
-                    - narrate "To get information about your Guards and how to use them, use the command: <yellow>/guardlist" format:guard_shop_shopkeeper_chat_format
+        # Sentinel things.
+        - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+        - execute "sentinel respawntime <script[guard_shop_config].parsed_key[guard.respawn_delay]> --id <[guard].id>" as_server silent
+        - execute "sentinel attackrate <script[guard_shop_config].parsed_key[guard.attack_rate]> --id <[guard].id>" as_server silent
+        - execute "sentinel realistic <script[guard_shop_config].parsed_key[guard.realistic]> --id <[guard].id>" as_server silent
+        - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
+        - execute "sentinel health <script[guard_shop_config].parsed_key[guard.health]> --id <[guard].id>" as_server silent
+        - execute "sentinel range <script[guard_shop_config].parsed_key[guard.attack_range]> --id <[guard].id>" as_server silent
+        - execute "sentinel chaserange <script[guard_shop_config].parsed_key[guard.chase_range]> --id <[guard].id>" as_server silent
+
+        # Adds targets, ignores, and avoids.
+        - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+            - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+        - foreach <script[guard_shop_config].parsed_key[guard.ignores]> as:i:
+            - execute "sentinel addignore <[i]> --id <[guard].id>" as_server silent
+        - foreach <script[guard_shop_config].parsed_key[guard.avoids]> as:i:
+            - execute "sentinel addavoid <[i]> --id <[guard].id>" as_server silent
+
+        - wait 1s
+        - narrate <script[guard_shop_config].parsed_key[dialogue.shopkeeper.purchases_a_guard]> format:guard_shop_shopkeeper_chat_format
 
 # Guard assignment script.
 personal_guard:
@@ -222,17 +278,23 @@ personal_guard:
     debug: false
     actions:
         on assignment:
-            - trigger name:proximity state:true radius:<proc[gs_data].context[guard.proximity_radius]>
-            - trigger name:chat state:true radius:<proc[gs_data].context[guard.proximity_radius]>
+        - trigger name:proximity state:true radius:<script[guard_shop_config].parsed_key[guard.proximity_radius]>
+        - trigger name:chat state:true radius:<script[guard_shop_config].parsed_key[guard.proximity_radius]>
         on remove:
-            - if !<npc.owner.has_flag[removing_guard]>:
-                - flag <npc.owner> guards:<-:<npc>
-                - flag <npc.owner> guard_ownership_amount:--
-                - flag <npc> statuses:!
-                # / CONFIG: What the Guard will say in chat when the guard has died and is automatically removed if `respawn_delay` is set to -1.
-                - narrate "<npc.name><reset>: I have died! So long friend." targets:<npc.owner>
+        - if !<npc.owner.has_flag[removing_guard]>:
+            - flag <npc.owner> guards:<-:<npc>
+            - flag <npc.owner> guard_ownership_amount:--
+            - flag <npc> statuses:!
+            - if <npc.owner.is_online>:
+                - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_death]> format:guard_shop_guard_chat_format targets:<npc.owner>
+            - else:
+                - flag <npc.owner> guards_died_while_away:->:<npc>
+        on despawn:
+        - if !<npc.owner.has_flag[despawning_guard]>:
+            - if <npc.has_flag[status.spawned]>:
+                - flag <npc> status.spawned:!
     interact scripts:
-        - guard_interact_script
+    - guard_interact_script
 
 # Guard interact script.
 guard_interact_script:
@@ -243,49 +305,69 @@ guard_interact_script:
             proximity trigger:
                 entry:
                     script:
-                        - lookclose true range:<proc[gs_data].context[guard.proximity_radius]> realistic
-                exit:
-                    script:
-                        - lookclose false
+                    - lookclose true range:<script[guard_shop_config].parsed_key[guard.proximity_radius]> realistic
             chat trigger:
                 1:
-                    # Deletes guard.
-                    # / CONFIG: Set the command to delete the guard. Is case insensitive.
-                    trigger: /remove/
+                    # Deletes Guard.
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.remove_guard]>/
                     script:
+                    - if <player> == <npc.owner>:
                         - flag <player> removing_guard
-                        - ~run remove_guard def.guard:<npc>
+                        - flag <player> guards:<-:<npc>
+                        - flag <player> guard_ownership_amount:--
+                        - flag <npc> statuses:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shopt_guard_chat_format
+                        - remove <npc>
                         - flag <player> removing_guard:!
                 2:
                     # Stop following.
-                    # / CONFIG: Set the command to tell the guard to stop following the player. Is case insensitive.
-                    trigger: /stay/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.stop_following]>/
                     script:
-                        - run stop_following def.guard:<npc>
+                    - if <player> == <npc.owner>:
+                        - execute "sentinel guard --id <npc.id>" as_server silent
+                        - if <npc.has_flag[status.following]>:
+                            - flag <npc> status.following:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shopt_guard_chat_format
                 3:
                     # Start following.
-                    # / CONFIG: Set the command to tell the guard to continue following the player. Is case insensitive.
-                    trigger: /follow/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.start_following]>/
                     script:
-                        - run start_following def.guard:<npc>
+                    - if <player> == <npc.owner>:
+                        - execute "sentinel guard <player.name> --id <npc.id>" as_server silent
+                        - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <npc.id>" as_server silent
+                        - if !<npc.has_flag[status.following]>:
+                            - flag <npc> status.following
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shopt_guard_chat_format
                 4:
                     # Don't attack.
-                    # / CONFIG: Set the command to tell the guard TO NOT attack enemies. Is case insensitive.
-                    trigger: /passive/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_passive]>/
                     script:
-                        - run become_passive def.guard:<npc>
+                    - if <player> == <npc.owner>:
+                        - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+                            - execute "sentinel removetarget <[i]> --id <npc.id>" as_server silent
+                            - if <npc.has_flag[status.aggressive]>:
+                                - flag <npc> status.aggressive:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shopt_guard_chat_format
                 5:
                     # Do attack.
-                    # / CONFIG: Set the command to tell the guard TO attack enemies. Is case insensitive.
-                    trigger: /aggressive/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.become_aggressive]>/
                     script:
-                        - run become_aggressive def.guard:<npc>
+                    - if <player> == <npc.owner>:
+                        - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+                            - execute "sentinel addtarget <[i]> --id <npc.id>" as_server silent
+                            - if !<npc.has_flag[status.aggressive]>:
+                                - flag <npc> status.aggressive
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shopt_guard_chat_format
                 6:
                     # Despawn.
-                    # / CONFIG: Set the command to tell the guard to despawn. Is case insensitive.
-                    trigger: /despawn/
+                    trigger: /<script[guard_shop_config].parsed_key[guard.commands.despawn_guard]>/
                     script:
-                        - run despawn_guard def.guard:<npc>
+                    - if <player> == <npc.owner>:
+                        - flag <player> despawning_guard
+                        - flag <npc> status.spawned:!
+                        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shopt_guard_chat_format
+                        - despawn <npc>
+                        - flag <player> despawning_guard:!
 
 # Task to remove a Guard.
 remove_guard:
@@ -293,12 +375,12 @@ remove_guard:
     definitions: guard
     debug: false
     script:
-        - flag <player> guards:<-:<[guard]>
-        - flag <player> guard_ownership_amount:--
-        - flag <[guard]> statuses:!
-        # / CONFIG: What the Guard will say in chat when they are removed.
-        - narrate "<[guard].name><reset>: Removed!"
-        - remove <[guard]>
+    - flag <player> removing_guard
+    - flag <player> guards:<-:<[guard]>
+    - flag <player> guard_ownership_amount:--
+    - flag <[guard]> statuses:!
+    - remove <[guard]>
+    - flag <player> removing_guard:!
 
 # Task to stop a Guard from following you.
 stop_following:
@@ -306,13 +388,9 @@ stop_following:
     definitions: guard
     debug: false
     script:
-        - execute "sentinel guard --id <[guard].id>" as_server silent
-        # / CONFIG: What the Guard will say in chat when they are told to stay.
-        - narrate "<[guard].name><reset>: I will stop following you."
-        - if <[guard].flag[statuses]> !contains staying:
-            - if <[guard].flag[statuses]> contains following:
-                - flag <[guard]> statuses:<-:following
-            - flag <[guard]> statuses:->:staying
+    - execute "sentinel guard --id <[guard].id>" as_server silent
+    - if <[guard].has_flag[status.following]>:
+        - flag <[guard]> status.following:!
 
 # Task to make the Guard follow you.
 start_following:
@@ -320,14 +398,10 @@ start_following:
     definitions: guard
     debug: false
     script:
-        - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
-        - execute "sentinel guarddistance <proc[gs_data].context[guard.follow_distance]> --id <[guard].id>" as_server silent
-        # / CONFIG: What the Guard will say in chat when they are told to start following you.
-        - narrate "<[guard].name><reset>: I will start following you."
-        - if <[guard].flag[statuses]> !contains following:
-            - if <[guard].flag[statuses]> contains staying:
-                - flag <[guard]> statuses:<-:staying
-            - flag <[guard]> statuses:->:following
+    - execute "sentinel guard <player.name> --id <[guard].id>" as_server silent
+    - execute "sentinel guarddistance <script[guard_shop_config].parsed_key[guard.follow_distance]> --id <[guard].id>" as_server silent
+    - if !<[guard].has_flag[status.following]>:
+        - flag <[guard]> status.following
 
 # Task to make the Guard passive.
 become_passive:
@@ -335,14 +409,10 @@ become_passive:
     definitions: guard
     debug: false
     script:
-        - foreach <proc[gs_data].context[guard.attacks]> as:i:
-            - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
-        # / CONFIG: What the Guard will say in chat when they are told to be passive.
-        - narrate "<[guard].name><reset>: I will not attack enemies."
-        - if <[guard].flag[statuses]> !contains passive:
-            - if <[guard].flag[statuses]> contains aggressive:
-                - flag <[guard]> statuses:<-:aggressive
-            - flag <[guard]> statuses:->:passive
+    - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+        - execute "sentinel removetarget <[i]> --id <[guard].id>" as_server silent
+    - if <[guard].has_flag[status.aggressive]>:
+        - flag <[guard]> status.aggressive:!
 
 # Task to make the Guard aggressive.
 become_aggressive:
@@ -350,14 +420,10 @@ become_aggressive:
     definitions: guard
     debug: false
     script:
-        - foreach <proc[gs_data].context[guard.attacks]> as:i:
-            - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
-        # / CONFIG: What the Guard will say in chat when they are told to be aggressive.
-        - narrate "<[guard].name><reset>: I will attack enemies!"
-        - if <[guard].flag[statuses]> !contains aggressive:
-            - if <[guard].flag[statuses]> contains passive:
-                - flag <[guard]> statuses:<-:passive
-            - flag <[guard]> statuses:->:aggressive
+    - foreach <script[guard_shop_config].parsed_key[guard.attacks]> as:i:
+        - execute "sentinel addtarget <[i]> --id <[guard].id>" as_server silent
+    - if !<[guard].has_flag[status.aggressive]>:
+        - flag <[guard]> status.aggressive
 
 # Task to despawn the Guard.
 despawn_guard:
@@ -365,13 +431,11 @@ despawn_guard:
     definitions: guard
     debug: false
     script:
-        # / CONFIG: What the guard will say in chat when they are told to desapwn.
-        - narrate "<[guard].name><reset>: See you later!"
-        - if <[guard].flag[statuses]> !contains despawned:
-            - if <[guard].flag[statuses]> contains spawned:
-                - flag <[guard]> statuses:<-:spawned
-            - flag <[guard]> statuses:->:despawned
-            - despawn <[guard]>
+    - if <[guard].has_flag[status.spawned]>:
+        - flag <player> despawning_guard
+        - flag <[guard]> status.spawned:!
+        - despawn <[guard]>
+        - flag <player> despawning_guard:!
 
 # Task to spawn the Guard.
 spawn_guard:
@@ -379,14 +443,9 @@ spawn_guard:
     definitions: guard
     debug: false
     script:
-        # / CONFIG: What the Guard should say when they are spawned back in.
-        - narrate "<[guard].name><reset>: Hello! I'm back!"
-        - if <[guard].flag[statuses]> !contains spawned:
-            - if <[guard].flag[statuses]> contains despawned:
-                - flag <[guard]> statuses:<-:despawned
-            - flag <[guard]> statuses:->:spawned
-            - flag <player> despawned_guards:<-:<[guard]>
-            - spawn <[guard]> <player.location.add[1,0,1]>
+    - if !<[guard].has_flag[status.spawned]>:
+        - flag <[guard]> status.spawned
+        - spawn <[guard]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
 
 # The inventory that lists all the Guards.
 guard_list_inventory:
@@ -396,26 +455,40 @@ guard_list_inventory:
     title: <&[guard_shop]>Guards
     gui: true
     procedural items:
-        - define items <list[]>
-        - if !<player.has_flag[guards]>:
-            - determine <item[gray_stained_glass_pane].repeat_as_list[54]>
-        - else:
-            - foreach <player.flag[guards]> as:guard:
-                - define display <[guard].name>
-                - define lore <list[<white>Statuses:]>
-                - foreach <[guard].flag[statuses]> as:status:
-                    - define "lore:->:<white>- <&[guard_status]><[status].to_titlecase>"
-                - define "lore:->:<white>Left click to edit!"
-                - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
-                - define items:->:<[item]>
-            - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
-            - determine <[items]>
+    - define items <list[]>
+    - if !<player.has_flag[guards]>:
+        - determine <item[gray_stained_glass_pane].repeat_as_list[54]>
+    - else:
+        - foreach <player.flag[guards]> as:guard:
+            - define display <[guard].name>
+            - define lore <list[<white>Statuses:]>
+
+            - if <[guard].has_flag[status.following]>:
+                - define "lore:->:<white>- <&[guard_status]>Following"
+            - else:
+                - define "lore:->:<white>- <&[guard_status]>Staying"
+
+            - if <[guard].has_flag[status.aggressive]>:
+                - define "lore:->:<white>- <&[guard_status]>Aggressive"
+            - else:
+                - define "lore:->:<white>- <&[guard_status]>Passive"
+
+            - if <[guard].has_flag[status.spawned]>:
+                - define "lore:->:<white>- <&[guard_status]>Spawned"
+            - else:
+                - define "lore:->:<white>- <&[guard_status]>Despawned"
+
+            - define "lore:->:<white>Left click to edit!"
+            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
+            - define items:->:<[item]>
+        - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
+        - determine <[items]>
     slots:
-        - [] [] [] [] [] [] [] [] []
-        - [] [] [] [] [] [] [] [] []
-        - [] [] [] [] [] [] [] [] []
-        - [] [] [] [] [] [] [] [] []
-        - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_tip] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [guard_list_tip] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane] [gray_stained_glass_pane]
 
 # The inventory that lets you edit a Guard.
 edit_guard_inventory:
@@ -425,11 +498,11 @@ edit_guard_inventory:
     title: GUARD
     gui: true
     procedural items:
-        - determine <item[gray_stained_glass_pane].repeat_as_list[27]>
+    - determine <item[gray_stained_glass_pane].repeat_as_list[27]>
     slots:
-        - [] [] [] [] [guard_head_clickable] [] [] [] []
-        - [] [] [] [] [] [] [] [] []
-        - [] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
+    - [] [] [] [] [guard_head_clickable] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [return_to_guard_list_item] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
 
 # The event that fires to open the Guard edit inventory, which sets up all the dynamic items and their lore.
 edit_guard_data_from_inventory:
@@ -437,60 +510,97 @@ edit_guard_data_from_inventory:
     debug: false
     events:
         on player clicks guard_head_clickable in guard_list_inventory:
-            - define inventory <inventory[edit_guard_inventory]>
-            - define guard <context.item.flag[guard]>
-
-            - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
-            - inventory adjust d:<[inventory]> slot:5 "lore:<white>Edit this guard!"
-            - foreach <[guard].flag[statuses]> as:status:
-                - if <[status]> in following|staying:
-                    - define following_or_not_following:<[status]>
-                - if <[status]> in passive|aggressive:
-                    - define passive_or_aggressive:<[status]>
-            - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle ggressiveness.|<white>Currently: <&[guard_status]><[passive_or_aggressive]>"
-            - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]><[following_or_not_following]>"
-
-            - inventory flag d:<[inventory]> slot:24 status:<[passive_or_aggressive]>
-            - inventory flag d:<[inventory]> slot:25 status:<[following_or_not_following]>
-
-            - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:23 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
-            - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
-
-            - adjust <[inventory]> title:<[guard].name>
-            - inventory open d:<[inventory]>
+        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks remove_item in edit_guard_inventory:
-            - inventory close
-            - flag <player> removing_guard
-            - ~run remove_guard def.guard:<context.item.flag[guard]>
-            - flag <player> removing_guard:!
+        - flag <player> removing_guard
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shopt_guard_chat_format
+        - ~run remove_guard def.guard:<context.item.flag[guard]>
+        - flag <player> removing_guard:!
+        - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
-            - inventory close
-            - if <context.item.flag[guard].flag[statuses]> contains spawned:
-                - run despawn_guard def.guard:<context.item.flag[guard]>
-            - else:
-                - narrate "<context.item.flag[guard].name><reset>: I am already despawned!"
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - if <context.item.flag[guard].has_flag[status.spawned]> || <context.item.flag[guard].is_spawned>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.despawned_on_command]> format:guard_shopt_guard_chat_format
+            - run despawn_guard def.guard:<context.item.flag[guard]>
+        - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_despawned]> format:guard_shopt_guard_chat_format
+        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks spawn_item in edit_guard_inventory:
-            - inventory close
-            - if <context.item.flag[guard].flag[statuses]> contains despawned:
-                - run spawn_guard def.guard:<context.item.flag[guard]>
-            - else:
-                # / CONFIG: What to say when the Guard is already spawned when tried to be spawned in.
-                - narrate "<context.item.flag[guard].name><reset>: I am already spawned!"
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - if !<context.item.flag[guard].has_flag[status.spawned]> || !<context.item.flag[guard].is_spawned>:
+            - run spawn_guard def.guard:<context.item.flag[guard]>
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.spawned_on_command]> format:guard_shopt_guard_chat_format
+        - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.already_spawned]> format:guard_shopt_guard_chat_format
+        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_aggressiveness_item in edit_guard_inventory:
-            - inventory close
-            - if <context.item.flag[status]> == passive:
-                - run become_aggressive def.guard:<context.item.flag[guard]>
-            - else:
-                - run become_passive def.guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - if <context.item.has_flag[status.aggressive]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_passive]> format:guard_shopt_guard_chat_format
+            - run become_passive def.guard:<context.item.flag[guard]>
+        - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.becomes_aggressive]> format:guard_shopt_guard_chat_format
+            - run become_aggressive def.guard:<context.item.flag[guard]>
+        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks toggle_following_item in edit_guard_inventory:
-            - inventory close
-            - if <context.item.flag[status]> == following:
-                - run stop_following def.guard:<context.item.flag[guard]>
-            - else:
-                - run start_following def.guard:<context.item.flag[guard]>
+        # Link NPC for the narrate format.
+        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - if <context.item.has_flag[status.following]>:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.stops_following]> format:guard_shopt_guard_chat_format
+            - run stop_following def.guard:<context.item.flag[guard]>
+        - else:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.starts_following]> format:guard_shopt_guard_chat_format
+            - run start_following def.guard:<context.item.flag[guard]>
+        - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
+        on player clicks return_to_guard_list_item in edit_guard_inventory:
+        - inventory open d:guard_list_inventory
+
+# Opens the inventory to edit a Guard and adjusts the items in the inventory based on the status of the Guard.
+open_edit_guard_inventory:
+    type: task
+    definitions: guard
+    debug: false
+    script:
+    - define inventory <inventory[edit_guard_inventory]>
+
+    - inventory adjust d:<[inventory]> slot:5 display:<[guard].name>
+    - inventory adjust d:<[inventory]> slot:5 "lore:<white>Edit this guard!"
+
+    - if <[guard].has_flag[status.aggressive]>:
+        - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Aggressive"
+        - inventory flag d:<[inventory]> slot:24 status.aggressive
+    - else:
+        - inventory adjust d:<[inventory]> slot:24 "lore:<white>Left click to toggle aggressiveness.|<white>Currently: <&[guard_status]>Passive"
+
+    - if <[guard].has_flag[status.following]>:
+        - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Following"
+        - inventory flag d:<[inventory]> slot:25 status.following
+    - else:
+        - inventory adjust d:<[inventory]> slot:25 "lore:<white>Left click to toggle following.|<white>Currently: <&[guard_status]>Staying"
+
+    - inventory flag d:<[inventory]> slot:21 guard:<[guard]>
+    - inventory flag d:<[inventory]> slot:22 guard:<[guard]>
+    - inventory flag d:<[inventory]> slot:23 guard:<[guard]>
+    - inventory flag d:<[inventory]> slot:24 guard:<[guard]>
+    - inventory flag d:<[inventory]> slot:25 guard:<[guard]>
+
+    - adjust <[inventory]> "title:<&[guard_shop]>Editing: <[guard].name>"
+    - inventory open d:<[inventory]>
+
+# Notifies the player that their Guards have died while they were away.
+guard_died_while_away:
+    type: world
+    debug: false
+    events:
+        on player joins flagged:guards_died_while_away:
+        - foreach <player.flag[guards_died_while_away]> as:guard:
+            - narrate <script[guard_shop_config].parsed_key[dialogue.guard.died_while_away]> format:guard_shop_guard_format
+            - flag <player> guards_died_while_away:<-:<[guard]>
 
 # Remove Guard item for "edit_guard_inventory".
 remove_item:
@@ -499,9 +609,9 @@ remove_item:
     material: barrier
     display name: <&[toggleable_items]>Remove Guard
     lore:
-        - <white>Left click to
-        - <white>permanently remove
-        - <white>this guard.
+    - <white>Left click to
+    - <white>permanently remove
+    - <white>this guard.
 
 # Despawn Guard item for "edit_guard_inventory".
 despawn_item:
@@ -510,9 +620,9 @@ despawn_item:
     material: firework_star
     display name: <&[toggleable_items]>Despawn Guard
     lore:
-        - <white>Left click to
-        - <white>despawn this
-        - <white>guard.
+    - <white>Left click to
+    - <white>despawn this
+    - <white>guard.
 
 # Spawn Guard item for "edit_guard_inventory".
 spawn_item:
@@ -521,10 +631,10 @@ spawn_item:
     material: sunflower
     display name: <&[toggleable_items]>Spawn Guard
     lore:
-        - <white>Left click to
-        - <white>spawn this
-        - <white>guard if
-        - <white>they are despawned.
+    - <white>Left click to
+    - <white>spawn this
+    - <white>guard if
+    - <white>they are despawned.
 
 # Toggle Guard aggressiveness item for "edit_guard_inventory".
 toggle_aggressiveness_item:
@@ -540,7 +650,13 @@ toggle_following_item:
     material: lead
     display name: <&[toggleable_items]>Toggle Following
 
-# Opens the guard list.
+return_to_guard_list_item:
+    type: item
+    debug: false
+    material: spectral_arrow
+    display name: <&[toggleable_items]>Go Back
+
+# Opens the Guard list.
 open_guard_list_inventory:
     type: command
     debug: false
@@ -549,10 +665,10 @@ open_guard_list_inventory:
     description: Lists all the guards you own and their statuses.
     permission: npcguardshop.open_guard_list
     aliases:
-        - openguardlist
-        - listguards
+    - guards
+    - listguards
     script:
-        - inventory open d:guard_list_inventory
+    - inventory open d:guard_list_inventory
 
 # Inventory to buy a Guard for the shopkeeper.
 buy_guard_inventory:
@@ -562,7 +678,7 @@ buy_guard_inventory:
     title: <&[guard_shop]>Guard Shop
     gui: true
     procedural items:
-        - determine <item[gray_stained_glass_pane].repeat_as_list[54]>
+    - determine <item[gray_stained_glass_pane].repeat_as_list[54]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
@@ -571,16 +687,15 @@ buy_guard_inventory:
     - [] [] [] [] [] [] [] [] []
 
 # Guard head for "buy_guard_inventory"
-# / CONFIG: Configure the "display name" and "lore" however you want!
 guard_head_clickable:
     type: item
     debug: false
     material: player_head
     display name: Purchase a Guard!
     lore:
-        - <white>Price:<green> $<proc[gs_data].context[guard.price]>
+    - <white>Price: <&[currency_color]><server.economy.format[<script[guard_shop_config].parsed_key[guard.price]>]>
     mechanisms:
-        skull_skin: <proc[gs_data].context[guard.skin.uuid]>|<proc[gs_data].context[guard.skin.texture]>
+        skull_skin: <script[guard_shop_config].parsed_key[guard.skin.uuid]>|<script[guard_shop_config].parsed_key[guard.skin.texture]>
 
 guard_list_tip:
     type: item
@@ -590,24 +705,24 @@ guard_list_tip:
     mechanisms:
         skull_skin: 917ad1d9-0807-4a28-ac5f-bd7a8f1b64e9|eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmEyYWZhN2JiMDYzYWMxZmYzYmJlMDhkMmM1NThhN2RmMmUyYmFjZGYxNWRhYzJhNjQ2NjJkYzQwZjhmZGJhZCJ9fX0=
     lore:
-        - <white>You can also say the following
-        - <white>commands in chat to tell
-        - <white>your guard what to do.<&co>
-        - <yellow>Passive<white> - Tells the guard to not
-        - <white>fight any entities.
-        - <yellow>Aggresive<white> - Tells the guard to fight
-        - <white>any entities that may cause you harm.
-        - <yellow>Stay<white> - Tells the guard to stop following
-        - <white>you around.
-        - <yellow>Follow<white> - Tells the guard to start
-        - <white>following you around.
-        - <yellow>Despawn<white> - Tells the guard to
-        - <white> despawn temporarily.
-        - <yellow>Remove<white> - Tells the guard to
-        - <white> despawn PERMANANTLY!
-        - <white>To spawn in any despawned Guards,
-        - <white>use the command<&co>
-        - <yellow>/spawnguards
+    - <white>You can also say the following
+    - <white>commands in chat to tell
+    - <white>your guard what to do<&co>
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.remove_guard].to_titlecase><white> - Tells the guard to
+    - <white> despawn PERMANENTLY!
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.stop_following].to_titlecase><white> - Tells the guard to stop following
+    - <white>you around.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.start_following].to_titlecase><white> - Tells the guard to start
+    - <white>following you around.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.become_passive].to_titlecase><white> - Tells the guard to not
+    - <white>fight any entities.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.become_aggressive].to_titlecase><white> - Tells the guard to fight
+    - <white>any entities that may cause you harm.
+    - <&[use_guard_tip]><script[guard_shop_config].parsed_key[guard.commands.despawn_guard].to_titlecase><white> - Tells the guard to
+    - <white> despawn temporarily.
+    - <white>To spawn in any despawned Guards,
+    - <white>use the command<&co>
+    - <&[use_guard_tip]>/spawnguards
 
 # Command to spawn the Guards.
 spawn_guards:
@@ -618,9 +733,9 @@ spawn_guards:
     permission: npcguardshop.spawn_guards
     debug: false
     script:
-        # Spawns in any unspawned guards.
-        - foreach <player.flag[despawned_guards]> as:guard:
-            - run spawn_guard def.guard:<[guard]>
+    # Spawns in any unspawned Guards.
+    - foreach <player.flag[despawned_guards]> as:guard:
+        - run spawn_guard def.guard:<[guard]>
 
 # Command to reload the Guards.
 reload_guards_command:
@@ -631,10 +746,11 @@ reload_guards_command:
     permission: npcguardshop.reload_guards
     debug: false
     script:
-        - run reload_guards
-        - narrate "Guards reloaded!" format:guard_shop_command_finished_format
+    - run reload_guards
+    - narrate "Guards reloaded!" format:guard_shop_command_finished_format
 
-# Task to reload the Guards. Mainly for administrtors/operators. Reload the guards when you edit any of these config values in the `guard_shop_config` container:
+# Task to reload the Guards. Mainly for administrtors/operators.
+# Reload the Guards when you edit any of these config values in the `guard_shop_config` container:
 #   skin (texture, signature, and/or uuid)
 #   respawn_delay
 #   attack_rate
@@ -649,37 +765,37 @@ reload_guards:
     type: task
     debug: false
     script:
-        - define data <proc[gs_data].context[guard]>
-        - foreach <server.players_flagged[guards]> as:player:
-            - foreach <[player].flag[guards]> as:guard:
-                - define id <[guard].id>
+    - define data <script[guard_shop_config].parsed_key[guard]>
+    - foreach <server.players_flagged[guards]> as:player:
+        - foreach <[player].flag[guards]> as:guard:
+            - define id <[guard].id>
 
-                # Updates sentinel info
-                - execute "sentinel respawntime <[data.respawn_delay]> --id <[id]>" as_server silent
-                - execute "sentinel attackrate <[data.attack_rate]> --id <[id]>" as_server silent
-                - execute "sentinel realistic <[data.realistic]> --id <[id]>" as_server silent
-                - execute "sentinel guarddistance <[data.follow_distance]> --id <[id]>" as_server silent
-                - execute "sentinel range <[data.attack_range]> --id <[guard].id>" as_server silent
-                - execute "sentinel chaserange <[data.chase_range]> --id <[guard].id>" as_server silent
+            # Updates sentinel info
+            - execute "sentinel respawntime <[data.respawn_delay]> --id <[id]>" as_server silent
+            - execute "sentinel attackrate <[data.attack_rate]> --id <[id]>" as_server silent
+            - execute "sentinel realistic <[data.realistic]> --id <[id]>" as_server silent
+            - execute "sentinel guarddistance <[data.follow_distance]> --id <[id]>" as_server silent
+            - execute "sentinel range <[data.attack_range]> --id <[guard].id>" as_server silent
+            - execute "sentinel chaserange <[data.chase_range]> --id <[guard].id>" as_server silent
 
-                # Updates NPC info
-                - adjust <[guard]> skin_blob:<[data.skin.texture]>;<[data.skin.signature]>
+            # Updates NPC info
+            - adjust <[guard]> skin_blob:<[data.skin.texture]>;<[data.skin.signature]>;<[data.skin.uuid]>
 
-                # Reset original targets, ignores, and avoids.
-                - foreach <[guard].sentinel.targets> as:i:
-                    - execute "sentinel removetarget <[i]> --id <[id]>" as_server silent
-                - foreach <[guard].sentinel.ignores> as:i:
-                    - execute "sentinel removeignore <[i]> --id <[id]>" as_server silent
-                - foreach <[guard].sentinel.avoids> as:i:
-                    - execute "sentinel removeavoid <[i]> --id <[id]>" as_server silent
+            # Reset original targets, ignores, and avoids.
+            - foreach <[guard].sentinel.targets> as:i:
+                - execute "sentinel removetarget <[i]> --id <[id]>" as_server silent
+            - foreach <[guard].sentinel.ignores> as:i:
+                - execute "sentinel removeignore <[i]> --id <[id]>" as_server silent
+            - foreach <[guard].sentinel.avoids> as:i:
+                - execute "sentinel removeavoid <[i]> --id <[id]>" as_server silent
 
-                # Add the new targets, ignores, and avoids.
-                - foreach <[data.attacks]> as:i:
-                    - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
-                - foreach <[data.ignores]> as:i:
-                    - execute "sentinel addignore <[i]> --id <[id]>" as_server silent
-                - foreach <[data.avoids]> as:i:
-                    - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
+            # Add the new targets, ignores, and avoids.
+            - foreach <[data.attacks]> as:i:
+                - execute "sentinel addtarget <[i]> --id <[id]>" as_server silent
+            - foreach <[data.ignores]> as:i:
+                - execute "sentinel addignore <[i]> --id <[id]>" as_server silent
+            - foreach <[data.avoids]> as:i:
+                - execute "sentinel addavoid <[i]> --id <[id]>" as_server silent
 
 # Despawn Guards when the player leaves if set.
 player_leaves_despawn_guards:
@@ -687,9 +803,9 @@ player_leaves_despawn_guards:
     debug: false
     events:
         on player quits flagged:guards:
-            # Loops through all the player's guards and despawns them.
-            - if <proc[gs_data].context[guard.despawn_on_owner_leave]>:
-                - despawn <player.flag[guards]>
+        # Loops through all the player's Guards and despawns them.
+        - if <script[guard_shop_config].parsed_key[guard.despawn_on_owner_leave]>:
+            - despawn <player.flag[guards]>
 
 # Respawn Guards when the player leaves if set.
 player_joins_respawn_guards:
@@ -697,15 +813,41 @@ player_joins_respawn_guards:
     debug: false
     events:
         on player joins flagged:guards:
-            # Loops through all the player's guards and respawns them.
-            - if <proc[gs_data].context[guard.respawn_on_owner_join]>:
-                - spawn <player.flag[guards]> <player.location.add[1,0,1]>
+        # Loops through all the player's Guards and respawns them.
+        - if <script[guard_shop_config].parsed_key[guard.respawn_on_owner_join]>:
+            # Spawn the Guard back in with a bit of offset from the player.
+            - spawn <player.flag[guards]> <player.location.find_spawnable_blocks_within[10].get[<util.random.int[6].to[10]>]>
+
+# If the server does not have any of the default colors set, then set them.
+guard_shop_adjust_custom_colors:
+    type: world
+    debug: false
+    events:
+        on scripts loaded:
+        - definemap defaults:
+            guard_shop: <dark_aqua>
+            guard_name: <gold>
+            shopkeeper_name: <red>
+            toggleable_items: <red>
+            guard_status: <blue>
+            use_guard_tip: <green>
+            reload_success: <green>
+            currency_color: <green>
+            shopkeeper_dialogue: <white>
+            guard_dialogue: <white>
+        - adjust server default_colors:<[defaults]>
 
 # Chat format for shopkeeper.
 guard_shop_shopkeeper_chat_format:
     type: format
     debug: false
-    format: <&[shopkeeper_name]><proc[gs_data].context[shopkeeper.chat_name]><reset>: <[text]>
+    format: <&[shopkeeper_name]><script[guard_shop_config].parsed_key[shopkeeper.chat_name]><reset>: <&[shopkeeper_dialogue]><[text]>
+
+# Chat format for Guards.
+guard_shopt_guard_chat_format:
+    type: format
+    debug: false
+    format: <npc.custom_name><reset>: <&[guard_dialogue]><[text]>
 
 # Error format for when a non-Guard related task needs an error to be thrown.
 guard_shop_error_format:
@@ -718,11 +860,3 @@ guard_shop_command_finished_format:
     type: format
     debug: false
     format: <&lb><&[reload_success]>Done!<reset><&rb><&co> <[text]>
-
-# This is a procedure to get any passed in config values from the `guard_shop_config` data script container and return them unespaced and parsed.
-gs_data:
-    type: procedure
-    definitions: data_key
-    debug: false
-    script:
-        - determine <script[guard_shop_config].data_key[<[data_key]>].unescaped>
