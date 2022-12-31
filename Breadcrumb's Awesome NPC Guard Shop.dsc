@@ -9,7 +9,7 @@
 # @author Breadcrumb
 # @date 2022-12-30
 # @denizen-build REL-1782
-# @script-version 3.7
+# @script-version 1.0.0
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
