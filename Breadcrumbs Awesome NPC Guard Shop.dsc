@@ -9,7 +9,7 @@
 # @author Breadcrumb
 # @date 2023-02-22
 # @denizen-build REL-1783
-# @script-version 1.0.1
+# @script-version 1.0.2
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -244,8 +244,6 @@ player_buys_a_guard:
         - flag <[guard]> status.following
         - flag <[guard]> status.aggressive
         - flag <[guard]> status.spawned
-
-        - flag <player> guard_ownership_amount:++
 
         - assignment set script:personal_guard npc:<[guard]>
         - adjust <[guard]> owner:<player>
