@@ -7,9 +7,9 @@
 # ~~ A Denizen Bounty project. ~~
 #
 # @author Breadcrumb
-# @date 2022-12-30
-# @denizen-build REL-1782
-# @script-version 1.0.0
+# @date 2023-02-22
+# @denizen-build REL-1783
+# @script-version 1.0.1
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
 #
 # Plugin dependencies:
@@ -238,6 +238,8 @@ player_buys_a_guard:
         - define guard <entry[guard].created_npc>
 
         - flag <player> guards:->:<[guard]>
+        - flag <player> guard_ownership_amount:++
+
         # Default statuses.
         - flag <[guard]> status.following
         - flag <[guard]> status.aggressive
@@ -479,7 +481,7 @@ guard_list_inventory:
                 - define "lore:->:<white>- <&[guard_status]>Despawned"
 
             - define "lore:->:<white>Left click to edit!"
-            - define item <item[guard_head_clickable[display_name=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
+            - define item <item[guard_head_clickable[display=<[display]>;lore=<[lore]>]].with_flag[guard:<[guard]>]>
             - define items:->:<[item]>
         - define items:|:<item[gray_stained_glass_pane].repeat_as_list[54]>
         - determine <[items]>
@@ -504,6 +506,20 @@ edit_guard_inventory:
     - [] [] [] [] [] [] [] [] []
     - [return_to_guard_list_item] [] [remove_item] [despawn_item] [spawn_item] [toggle_aggressiveness_item] [toggle_following_item] [] []
 
+# The inventory that lets you edit a Guard.
+remove_guard_confirmation_inventory:
+    type: inventory
+    debug: false
+    inventory: chest
+    title: <red>Are You Sure?
+    gui: true
+    procedural items:
+    - determine <item[gray_stained_glass_pane].repeat_as_list[27]>
+    slots:
+    - [] [] [] [] [guard_head_clickable] [] [] [] []
+    - [] [] [] [do_not_remove_guard_item] [] [remove_guard_item] [] [] []
+    - [] [] [] [] [] [] [] [] []
+
 # The event that fires to open the Guard edit inventory, which sets up all the dynamic items and their lore.
 edit_guard_data_from_inventory:
     type: world
@@ -512,11 +528,16 @@ edit_guard_data_from_inventory:
         on player clicks guard_head_clickable in guard_list_inventory:
         - run open_edit_guard_inventory def.guard:<context.item.flag[guard]>
         on player clicks remove_item in edit_guard_inventory:
-        - flag <player> removing_guard
+        - flag <player> removing_guard:<context.item.flag[guard]>
+        - inventory open d:remove_guard_confirmation_inventory
+        on player clicks do_not_remove_guard_item in remove_guard_confirmation_inventory:
+        - run open_edit_guard_inventory def.guard:<player.flag[removing_guard]>
+        - flag <player> removing_guard:!
+        on player clicks remove_guard_item in remove_guard_confirmation_inventory:
         # Link NPC for the narrate format.
-        - adjust <queue> linked_npc:<context.item.flag[guard]>
+        - adjust <queue> linked_npc:<player.flag[removing_guard]>
         - narrate <script[guard_shop_config].parsed_key[dialogue.guard.removed_on_command]> format:guard_shopt_guard_chat_format
-        - ~run remove_guard def.guard:<context.item.flag[guard]>
+        - ~run remove_guard def.guard:<player.flag[removing_guard]>
         - flag <player> removing_guard:!
         - inventory open d:guard_list_inventory
         on player clicks despawn_item in edit_guard_inventory:
@@ -650,11 +671,26 @@ toggle_following_item:
     material: lead
     display name: <&[toggleable_items]>Toggle Following
 
+# Return to main Guard list.
 return_to_guard_list_item:
     type: item
     debug: false
     material: spectral_arrow
     display name: <&[toggleable_items]>Go Back
+
+# Don't remove the Guard
+do_not_remove_guard_item:
+    type: item
+    debug: false
+    material: barrier
+    display name: <red>Nevermind
+
+# Item to remove the Guard for sure.
+remove_guard_item:
+    type: item
+    debug: false
+    material: lime_wool
+    display name: <green>Yes, Remove Guard
 
 # Opens the Guard list.
 open_guard_list_inventory:
