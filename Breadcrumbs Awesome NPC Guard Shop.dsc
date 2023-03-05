@@ -11,6 +11,7 @@
 # @denizen-build REL-1783
 # @script-version 1.0.2
 # @github https://github.com/BreadcrumbIsTaken/denizen-bounties
+# This script is released under the public domain. Feel free to do whatever you want with it!
 #
 # Plugin dependencies:
 #   Denizen (to run this script)
